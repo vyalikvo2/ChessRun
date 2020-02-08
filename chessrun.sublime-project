@@ -1,0 +1,15 @@
+{
+	"folders":
+	[
+		{
+			"path": "Assets/Scripts",
+			"follow_symlinks": true,
+			"file_exclude_patterns":
+			[
+				"*.dll",
+				"*.meta"
+			]
+		}
+	],
+	"solution_file": "./ChessRun.sln"
+}

@@ -1,0 +1,623 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"tran",
+				"transition-delay"
+			],
+			[
+				"thu",
+				"thumbnail_id"
+			],
+			[
+				"pos",
+				"post_id"
+			],
+			[
+				"flex-",
+				"flex-wrap"
+			],
+			[
+				"O",
+				"One"
+			],
+			[
+				"soc",
+				"social-icons"
+			],
+			[
+				"bac",
+				"background-color"
+			],
+			[
+				"social-",
+				"social-vk"
+			],
+			[
+				"flex",
+				"flex-start"
+			],
+			[
+				"fight",
+				"fightResult"
+			],
+			[
+				"item_",
+				"item_new_id"
+			],
+			[
+				"user",
+				"user_wear_obj"
+			],
+			[
+				"itemInf",
+				"itemInfo"
+			],
+			[
+				"rig",
+				"right_pin"
+			],
+			[
+				"ne",
+				"next_quest_id"
+			],
+			[
+				"some",
+				"some_data"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "/D/sites/banya-mobile/onepagepro/css/style-core.css",
+			"settings":
+			{
+				"buffer_size": 96682,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/D/sites/banya-mobile/onepagepro/css/style-custom.css",
+			"settings":
+			{
+				"buffer_size": 81896,
+				"line_ending": "Windows"
+			}
+		}
+	],
+	"build_system": "Packages/Unity3D Build System/Unity.sublime-build",
+	"build_system_choices":
+	[
+		[
+			[
+				[
+					"Packages/Unity3D Build System/Unity.sublime-build",
+					""
+				],
+				[
+					"Packages/Unity3D Build System/Unity.sublime-build",
+					"Clean"
+				]
+			],
+			[
+				"Packages/Unity3D Build System/Unity.sublime-build",
+				""
+			]
+		]
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 392.0,
+		"last_filter": "Omnis",
+		"selected_items":
+		[
+			[
+				"Omnis",
+				"OmniSharpSublime: Reload Solution"
+			],
+			[
+				"install pa",
+				"Package Control: Install Package"
+			],
+			[
+				"Install ",
+				"Package Control: Install Package"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"PackageControl: Ins",
+				"Package Control: Install Package"
+			],
+			[
+				"PackageControl: In",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 432.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/D/UNITY/ChessRun/Assets/Scripts",
+		"/D/UNITY/ChessRun/Assets/Scripts/controllers",
+		"/D/UNITY/ChessRun/Assets/Scripts/input",
+		"/D/UNITY/ChessRun/Assets/Scripts/Pieces"
+	],
+	"file_history":
+	[
+		"/D/sites/banya-mobile/onepagepro/style.css",
+		"/C/Users/Илья/AppData/Local/Temp/Rar$DIa0.859/index.php",
+		"/C/Users/Илья/AppData/Local/Temp/Rar$DIa0.286/functions-toolkit.php",
+		"/D/sites/banya-mobile/functions.php",
+		"/D/sites/banya-mobile/onepagepro/archive.php",
+		"/D/sites/banya-mobile/onepagepro/include/options/general.php",
+		"/D/sites/banya-mobile/onepagepro/include/include-script.php",
+		"/D/sites/banya-mobile/onepagepro/include/function-regist.php",
+		"/D/sites/banya-mobile/onepagepro/page.php",
+		"/D/sites/banya-mobile/onepagepro/single.php",
+		"/D/sites/banya-mobile/onepagepro/index.php",
+		"/D/sites/banya-mobile/onepagepro/include/maintenance.php",
+		"/D/sites/banya-mobile/onepagepro/include/pb-element-testimonial.php",
+		"/D/sites/banya-mobile/onepagepro/include/pb-element-title.php",
+		"/D/sites/banya-mobile/onepagepro/archive-product.php",
+		"/D/sites/banya-mobile/onepagepro/functions.php",
+		"/D/sites/banya-mobile/onepagepro/functions.wp-styles.php",
+		"/D/sites/banya-mobile/wp-diff.php",
+		"/D/sites/banya-mobile/wp-db.php",
+		"/D/sites/banya-mobile/wp-tmp.php",
+		"/D/sites/banya-mobile/wp-vcd.php",
+		"/D/sites/banya-mobile/page.php",
+		"/D/sites/banya-mobile/onepagepro/include/utility.php",
+		"/D/sites/banya-mobile/80608_onepagepro_v110/onepagepro/header.php",
+		"/D/sites/banya-mobile/80608_onepagepro_v110/onepagepro/footer.php",
+		"/D/sites/banya-mobile/80608_onepagepro_v110/onepagepro/plugins/wpml.php",
+		"/D/sites/banya-mobile/80608_onepagepro_v110/onepagepro/archive-product.php",
+		"/D/sites/banya-mobile/80608_onepagepro_v110/onepagepro/functions.php",
+		"/D/sites/banya-mobile/80608_onepagepro_v110/onepagepro/class.theme-modules.php",
+		"/D/UNITY/ChessRun/Assets/Scripts/menu/MainMenu.cs",
+		"/D/UNITY/ChessRun/Assets/Scripts/GameData.cs",
+		"/D/UNITY/ChessRun/Assets/Scripts/PrefabsList.cs",
+		"/D/UNITY/ChessRun/Assets/Scripts/Pieces/KingHorse.cs",
+		"/D/UNITY/ChessRun/Assets/Scripts/Pieces/Horse.cs",
+		"/D/UNITY/ChessRun/Assets/Scripts/Pieces/PieceInteraction.cs",
+		"/D/UNITY/ChessRun/Assets/Scripts/Board.cs",
+		"/D/UNITY/ChessRun/Assets/Scripts/controllers/GameStateController.cs",
+		"/D/UNITY/ChessRun/Assets/Scripts/Game.cs",
+		"/D/UNITY/ChessRun/Assets/Scripts/input/PieceDrag.cs",
+		"/D/UNITY/ChessRun/Assets/Scripts/Pieces/BasePiece.cs",
+		"/D/UNITY/ChessRun/Assets/Scripts/TypePiece.cs",
+		"/D/UNITY/ChessRun/Assets/Scripts/Pieces/TypePiece.cs",
+		"/D/UNITY/ChessRun/Assets/Scripts/Cell.cs",
+		"/D/UNITY/ChessRun/Assets/Scripts/UI/GameUI.cs",
+		"/D/UNITY/ChessRun/Assets/Scripts/menu/LevelsContainer.cs",
+		"/C/Users/Илья/AppData/Roaming/Sublime Text 3/Packages/Default/Preferences.sublime-settings",
+		"/D/UNITY/ChessRun/Assets/Scripts/Pieces/Pawn.cs",
+		"/D/UNITY/ChessRun/Assets/Scripts/Pieces/King.cs",
+		"/D/UNITY/ChessRun/Assets/Scripts/menu/ChooseLevelButton.cs",
+		"/C/wamp/www/wp-content/themes/meloo_theme/inc/blocks.php",
+		"/C/wamp/www/wp-content/themes/meloo_theme/single-meloo_gallery.php",
+		"/C/wamp/www/wp-content/themes/meloo_theme/style.css",
+		"/C/wamp/www/wp-content/themes/meloo_theme/inc/template-tags.php",
+		"/C/wamp/www/wp-content/themes/index.php",
+		"/C/wamp/www/wp-content/themes/meloo_theme/functions.php",
+		"/C/wamp/www/wp-content/themes/meloo_theme/header.php",
+		"/C/wamp/www/wp-content/themes/meloo_theme/inc/modules.php",
+		"/C/wamp/www/wp-content/plugins/woocommerce/includes/wc-template-functions.php",
+		"/C/wamp/www/wp-content/themes/meloo_theme/woocommerce.php",
+		"/C/wamp/www/wp-content/themes/meloo_theme/single-meloo_artists.php",
+		"/C/wamp/www/wp-content/themes/meloo_theme/css/woocommerce-theme-style.css",
+		"/C/wamp/www/wp-content/themes/meloo_theme/header3.php",
+		"/C/wamp/www/wp-content/themes/meloo_theme/partials/header-style1.php",
+		"/C/wamp/www/wp-content/plugins/woocommerce/includes/admin/class-wc-admin-taxonomies.php",
+		"/C/wamp/www/wp-content/plugins/woocommerce/templates/content-single-product.php",
+		"/C/wamp/www/wp-content/themes/meloo_theme/index.php",
+		"/D/sites/planlomonosova/meloo_theme/css/woocommerce-theme-style.css",
+		"/C/wamp/www/wp-content/plugins/woocommerce/templates/single-product.php",
+		"/C/wamp/www/wp-content/themes/meloo_theme/header2.php",
+		"/C/wamp/www/wp-content/plugins/woocommerce/templates/content-product.php",
+		"/C/wamp/www/wp-content/plugins/woocommerce/templates/archive-product.php",
+		"/C/wamp/www/wp-content/plugins/woocommerce/templates/loop/loop-start.php",
+		"/C/wamp/www/wp-content/languages/plugins/woocommerce-ru_RU.po",
+		"/C/wamp/www/wp-content/plugins/woocommerce/templates/content-product_cat.php",
+		"/D/sites/planlomonosova/www/wp-content/themes/meloo_theme/inc/modules.php",
+		"/C/wamp/www/wp-content/themes/meloo_theme/footer.php",
+		"/D/sites/planlomonosova/www/wp-content/themes/meloo_theme/header.php",
+		"/C/wamp/www/wp-content/plugins/kc_pro/assets/css/kc.front.builder.css",
+		"/C/wamp/www/wp-content/themes/meloo_theme/template-events.php",
+		"/C/wamp/www/wp-content/themes/meloo_theme/partials/loop-artists-block1.php",
+		"/C/wamp/www/wp-content/plugins/meloo-toolkit/includes/class-customizer.php",
+		"/C/wamp/www/wp-content/plugins/kingcomposer/shortcodes/live_editor/kc_row.php",
+		"/C/wamp/www/wp-content/plugins/meloo-toolkit/includes/scamp-player/class-scamp-player.php",
+		"/C/wamp/www/wp-content/plugins/meloo-toolkit/languages/meloo-toolkit.pot",
+		"/C/wamp/www/wp-content/plugins/contact-form-7/includes/shortcodes.php",
+		"/C/wamp/www/wp-content/plugins/kingcomposer/kingcomposer.php",
+		"/C/wamp/www/wp-content/plugins/jetpack/modules/shortcodes/archives.php",
+		"/C/wamp/www/wp-content/plugins/kingcomposer/includes/kc.front.php",
+		"/C/wamp/www/wp-content/plugins/kingcomposer/includes/kc.actions.php",
+		"/C/wamp/www/wp-content/themes/meloo_theme/inc/helpers.php",
+		"/C/wamp/www/wp-content/plugins/kingcomposer/includes/kc.functions.php",
+		"/C/wamp/www/wp-content/plugins/jetpack/vendor/automattic/jetpack-sync/src/class-functions.php",
+		"/C/wamp/www/wp-content/themes/meloo_theme/category.php",
+		"/C/wamp/www/wp-content/themes/meloo_theme/template-artists.php",
+		"/C/wamp/www/wp-content/plugins/meloo-toolkit/includes/scamp-player/shortcodes-scamp-player.php",
+		"/C/wamp/www/wp-content/themes/meloo_theme/partials/loop-events-block1.php",
+		"/C/wamp/www/wp-content/plugins/epron-toolkit/includes/scamp-player/class-scamp-player.php",
+		"/C/wamp/www/wp-content/themes/meloo_theme/author.php",
+		"/C/wamp/www/wp-content/themes/meloo_theme/languages/meloo.pot",
+		"/C/wamp/www/wp-content/themes/meloo_theme/partials/post-title.php",
+		"/D/UNITY/ChessRun/Assets/Scripts/ChipDrag.cs",
+		"/C/wamp/www/wp-content/plugins/woocommerce/templates/checkout/terms.php",
+		"/C/wamp/www/wp-content/plugins/kingcomposer/shortcodes/kc_team.php",
+		"/C/wamp/www/wp-content/plugins/kingcomposer/includes/kc.maps.php",
+		"/C/wamp/www/wp-content/plugins/kingcomposer/includes/kc.templates.php",
+		"/C/Users/Илья/AppData/Roaming/Sublime Text 3/Packages/User/UnityC#.sublime-settings",
+		"/D/UNITY/ChessRun/Assets/ChipDrag.cs",
+		"/D/UNITY/ChessRun/chessrun.sublime-project",
+		"/C/wamp/www/wp-content/plugins/woocommerce/includes/shortcodes/class-wc-shortcode-products.php",
+		"/C/wamp/www/wp-content/plugins/woocommerce/templates/single-product/price.php",
+		"/C/wamp/www/wp-includes/general-template.php",
+		"/C/wamp/www/wp-content/plugins/jetpack/modules/protect.php",
+		"/C/wamp/www/wp-content/plugins/woocommerce/templates/single-product/short-description.php",
+		"/C/wamp/www/wp-content/plugins/woocommerce/templates/single-product/product-attributes.php",
+		"/C/wamp/www/wp-content/plugins/woocommerce/templates/single-product/product-image.php",
+		"/C/wamp/www/wp-content/plugins/woocommerce/includes/class-wc-post-data.php",
+		"/C/wamp/www/wp-content/plugins/woocommerce/includes/wc-template-hooks.php",
+		"/C/wamp/www/wp-content/plugins/woocommerce/templates/loop/price.php",
+		"/C/wamp/www/wp-content/plugins/woocommerce/includes/class-wc-product-factory.php",
+		"/C/wamp/www/wp-content/plugins/woocommerce/includes/class-wc-product-simple.php",
+		"/C/wamp/www/wp-content/plugins/woocommerce/includes/wc-stock-functions.php",
+		"/C/wamp/www/wp-content/plugins/woocommerce/includes/wc-webhook-functions.php",
+		"/C/wamp/www/wp-content/plugins/woocommerce/includes/class-wc-shortcodes.php",
+		"/C/wamp/www/wp-content/plugins/woocommerce/woocommerce.php",
+		"/C/wamp/www/wp-content/plugins/woocommerce/templates/content-widget-product.php",
+		"/C/wamp/www/wp-content/plugins/woocommerce/templates/global/wrapper-start.php",
+		"/C/wamp/www/wp-content/plugins/woocommerce/templates/loop/orderby.php",
+		"/C/wamp/www/wp-content/plugins/woocommerce/includes/class-woocommerce.php"
+	],
+	"find":
+	{
+		"height": 34.0
+	},
+	"find_in_files":
+	{
+		"height": 90.0,
+		"where_history":
+		[
+			"C:\\wamp\\www\\wp-content\\",
+			"C:\\wamp\\www\\wp-content\\plugins\\kingcomposer",
+			"C:\\wamp\\www\\,C:\\wamp\\www\\wp-content\\",
+			"C:\\wamp\\www\\,C:\\wamp\\www\\wp-content\\plugins\\woocommerce",
+			"C:\\wamp\\www\\",
+			"C:\\wamp\\www\\wp-content\\themes\\meloo_theme"
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"line-height",
+			"line-height\\",
+			"line-heihgt",
+			"gdlr-core-pbf-element",
+			"gdlr-core-",
+			"gdlr-core-full-height-content",
+			"line-he",
+			"p{",
+			" p{",
+			"p{",
+			"p",
+			"p ",
+			"p {",
+			"gdlr-core-text-box-item-content",
+			"з",
+			"gdlr-core-text-box-item-content",
+			"gameS",
+			"gameStateController",
+			"intera",
+			"addPiece",
+			"piecesPrefabs",
+			"movePi",
+			"movePieceTo",
+			"setD",
+			"canMoveToCellAt",
+			"movePieceTo",
+			"1",
+			"movePieceTo",
+			"Prev",
+			"Pre",
+			"nav-links",
+			"nav-desc",
+			"Previous",
+			"nex",
+			"prev",
+			"pre",
+			"Previ",
+			"more posts",
+			"cats-style",
+			"post-cats",
+			"post-cats-",
+			"post-cats-he",
+			"post-cats",
+			"post-header-cats",
+			"module-info-container",
+			"post-title",
+			"post-header h1",
+			"h1 {",
+			"post-meta-top",
+			"post-header",
+			"owl-pagination",
+			"module-info-container",
+			"post-meta",
+			"module-excerpt",
+			"album-page-cover-wrapper",
+			"postdate",
+			"postate",
+			"$container_classes",
+			"conta",
+			"bread",
+			"brea",
+			"woocommerce_breadcrumb",
+			"the_breadcrumb_gallery",
+			"background",
+			"woocommerce-ordering",
+			"woocommerce-breadcrumb",
+			"$content_classes",
+			"is_product_category",
+			"orderby",
+			"get_header",
+			"$page_builder ",
+			"ajax",
+			"kc_do_shortcode",
+			"aja",
+			"kc_do_shortcode",
+			"brea",
+			"members-",
+			"my-h2-title",
+			"related ",
+			"woocommerce-Price-amount",
+			"product_title",
+			"v",
+			"entry-title\\",
+			"entry-title",
+			"flex-viewport",
+			"border",
+			"woocommerce-product-gallery__image",
+			"product-type-simple",
+			"hidden",
+			"absoliute",
+			"hidden {",
+			"hidden",
+			"custom-catalog",
+			"opacity",
+			"products",
+			"products ",
+			"opacity",
+			"cate",
+			"product-category",
+			"categor",
+			"thumbnail_id_hover",
+			"update_term_meta",
+			"thumbnail_id",
+			"thumbnail_id_hover",
+			"thumbnail_id",
+			"hover",
+			"wc_product_cat_class",
+			"wc_get_product_cat_cla",
+			"wc_get_product_cat_class\nwc_get_product_cat_class",
+			"wc_get_product_cat_class",
+			"product-category",
+			"product_cat_thumbnail",
+			"product_cat_thumbnail_id",
+			"thumbnail_id",
+			"get_term_meta",
+			"edit_category_fields",
+			"Thumbnail",
+			"Миниа",
+			"instance",
+			"Миниатюра",
+			"groum",
+			"gloul-",
+			"filter_product_cat_class",
+			"postdate",
+			"artist-nam",
+			"artist-na",
+			"artist-name",
+			"jqu"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 1,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "/D/sites/banya-mobile/onepagepro/css/style-core.css",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 96682,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								57514,
+								57514
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/CSS/CSS.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": -0.0,
+						"translation.y": 10310.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "/D/sites/banya-mobile/onepagepro/css/style-custom.css",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 81896,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								18883,
+								18883
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/CSS/CSS.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 1639.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 21.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 88.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"output.variable_get":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "chessrun.sublime-project",
+	"replace":
+	{
+		"height": 38.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"",
+				"ChipDrag.cs"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 150.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
