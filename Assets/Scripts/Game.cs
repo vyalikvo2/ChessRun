@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class Game : MonoBehaviour {
 
 	public static float TO_UNITS = 0.01f;
+	public static float TO_PIXELS = 1/TO_UNITS;
 	public static float CELL_SIZE = 70;
 	public static float POS_TO_COORDS = TO_UNITS * CELL_SIZE;
 	public static float COORDS_TO_POS = 1/(POS_TO_COORDS);
@@ -12,7 +13,7 @@ public class Game : MonoBehaviour {
 	public Camera camera;
 
 	[HideInInspector] public Engine engine;
-	public static GameStateController gameStateController;
+	public static GameController gameController;
 
 
 	[HideInInspector] public Board board;
@@ -32,10 +33,16 @@ public class Game : MonoBehaviour {
 		levels.Add (new string[] {"KOOOOE"});
 
 		levels.Add (new string[] {"K#OOOE", 
-			                      "11#11111"});
+			                            "11#11111"});
 
 		levels.Add (new string[] {"K#OOE", 
-								  "H##"});
+			                            "H##"});
+		
+		levels.Add (new string[] {"##K#O#O", 
+			                            "O#H#O##",
+			                            "#####O",
+			                            "EO####"
+		});
 
 	}
 
@@ -44,14 +51,15 @@ public class Game : MonoBehaviour {
 
 		engine = GetComponent<Engine> () as Engine;
 		board = GetComponent<Board>() as Board;
-		gameStateController = GetComponent<GameStateController>() as GameStateController;
+		gameController = GetComponent<GameController>() as GameController;
 
 		PieceInteraction.game = this;
 
 		setupLevels ();
 		board.Setup ();
 		
-		setLevel(GameData.choosedLevel);	
+		//setLevel(GameData.choosedLevel);	
+		setLevel(3);
 	}
 
 
@@ -62,7 +70,7 @@ public class Game : MonoBehaviour {
 
 		Debug.Log ("Setup level "+currentLevel);
 		board.CreateByMap (levels [currentLevel]);
-		gameStateController.startLevel();
+		gameController.startLevel();
 
 		gameUI.Txt_level.text = "Уровень: "+ (currentLevel+1);
 	}

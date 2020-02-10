@@ -13,4 +13,9 @@ public class HighlightPiece : BasePiece {
 		base.Setup (pos);
 	}
 	
+	public override void RefreshPos()
+	{
+		transform.position = new Vector3 (pos.x * Game.POS_TO_COORDS, pos.y * Game.POS_TO_COORDS, 0);
+	}
+	
 }

@@ -5,7 +5,9 @@ using System.Collections.Generic;
 public class Home : BasePiece
 {
 	public override void Setup(Vector2 pos)
-	{	
+	{
+		type = TypePiece.BUILDING_HOME;
+		
 		moves = new List<Vector2> () {
 
 		};
@@ -14,6 +16,11 @@ public class Home : BasePiece
 		};
 
 		base.Setup (pos);
+	}
+	
+	public override bool isInteractableWith(BasePiece piece)
+	{
+		return piece.type == TypePiece.KING_HORSE;
 	}
 	
 }

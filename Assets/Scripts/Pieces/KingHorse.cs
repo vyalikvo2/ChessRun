@@ -18,6 +18,17 @@ public class KingHorse : BasePiece
 		};
 		
 		movesAttack = moves;
+		
+		interactiveMoves = new List<InteractiveMove>()
+		{
+			new InteractiveMove(new Vector2(-1, 1), PieceInteraction.KING_FROM_HORSE), // top left
+			new InteractiveMove(new Vector2( 1,-1), PieceInteraction.KING_FROM_HORSE), // bottom right
+			new InteractiveMove(new Vector2( 1, 1), PieceInteraction.KING_FROM_HORSE), // top right
+			new InteractiveMove(new Vector2( 0, 1), PieceInteraction.KING_FROM_HORSE), // top
+			new InteractiveMove(new Vector2( 0,-1), PieceInteraction.KING_FROM_HORSE), // bottom
+			new InteractiveMove(new Vector2(-1, 0), PieceInteraction.KING_FROM_HORSE), // left
+			new InteractiveMove(new Vector2( 1, 0), PieceInteraction.KING_FROM_HORSE)  // right
+		};
 
 		type = TypePiece.KING_HORSE;
 		

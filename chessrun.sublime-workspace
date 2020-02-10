@@ -71,22 +71,6 @@
 	},
 	"buffers":
 	[
-		{
-			"file": "/D/sites/banya-mobile/onepagepro/css/style-core.css",
-			"settings":
-			{
-				"buffer_size": 96682,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/D/sites/banya-mobile/onepagepro/css/style-custom.css",
-			"settings":
-			{
-				"buffer_size": 81896,
-				"line_ending": "Windows"
-			}
-		}
 	],
 	"build_system": "Packages/Unity3D Build System/Unity.sublime-build",
 	"build_system_choices":
@@ -111,10 +95,14 @@
 	"build_varint": "",
 	"command_palette":
 	{
-		"height": 392.0,
-		"last_filter": "Omnis",
+		"height": 173.0,
+		"last_filter": "package insta",
 		"selected_items":
 		[
+			[
+				"package insta",
+				"Package Control: Install Package"
+			],
 			[
 				"Omnis",
 				"OmniSharpSublime: Reload Solution"
@@ -160,13 +148,16 @@
 	},
 	"expanded_folders":
 	[
-		"/D/UNITY/ChessRun/Assets/Scripts",
 		"/D/UNITY/ChessRun/Assets/Scripts/controllers",
 		"/D/UNITY/ChessRun/Assets/Scripts/input",
 		"/D/UNITY/ChessRun/Assets/Scripts/Pieces"
 	],
 	"file_history":
 	[
+		"/D/UNITY/ChessRun/Assets/Scripts/Cell.cs",
+		"/D/UNITY/ChessRun/Assets/Scripts/Engine.cs",
+		"/D/sites/banya-mobile/onepagepro/css/style-custom.css",
+		"/D/sites/banya-mobile/onepagepro/css/style-core.css",
 		"/D/sites/banya-mobile/onepagepro/style.css",
 		"/C/Users/Илья/AppData/Local/Temp/Rar$DIa0.859/index.php",
 		"/C/Users/Илья/AppData/Local/Temp/Rar$DIa0.286/functions-toolkit.php",
@@ -209,7 +200,6 @@
 		"/D/UNITY/ChessRun/Assets/Scripts/Pieces/BasePiece.cs",
 		"/D/UNITY/ChessRun/Assets/Scripts/TypePiece.cs",
 		"/D/UNITY/ChessRun/Assets/Scripts/Pieces/TypePiece.cs",
-		"/D/UNITY/ChessRun/Assets/Scripts/Cell.cs",
 		"/D/UNITY/ChessRun/Assets/Scripts/UI/GameUI.cs",
 		"/D/UNITY/ChessRun/Assets/Scripts/menu/LevelsContainer.cs",
 		"/C/Users/Илья/AppData/Roaming/Sublime Text 3/Packages/Default/Preferences.sublime-settings",
@@ -291,10 +281,7 @@
 		"/C/wamp/www/wp-content/plugins/woocommerce/includes/wc-webhook-functions.php",
 		"/C/wamp/www/wp-content/plugins/woocommerce/includes/class-wc-shortcodes.php",
 		"/C/wamp/www/wp-content/plugins/woocommerce/woocommerce.php",
-		"/C/wamp/www/wp-content/plugins/woocommerce/templates/content-widget-product.php",
-		"/C/wamp/www/wp-content/plugins/woocommerce/templates/global/wrapper-start.php",
-		"/C/wamp/www/wp-content/plugins/woocommerce/templates/loop/orderby.php",
-		"/C/wamp/www/wp-content/plugins/woocommerce/includes/class-woocommerce.php"
+		"/C/wamp/www/wp-content/plugins/woocommerce/templates/content-widget-product.php"
 	],
 	"find":
 	{
@@ -463,66 +450,8 @@
 	"groups":
 	[
 		{
-			"selected": 1,
 			"sheets":
 			[
-				{
-					"buffer": 0,
-					"file": "/D/sites/banya-mobile/onepagepro/css/style-core.css",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 96682,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								57514,
-								57514
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/CSS/CSS.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": -0.0,
-						"translation.y": 10310.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "/D/sites/banya-mobile/onepagepro/css/style-custom.css",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 81896,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								18883,
-								18883
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/CSS/CSS.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 1639.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				}
 			]
 		}
 	],

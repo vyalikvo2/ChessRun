@@ -21,8 +21,8 @@ public class HealthBar : MonoBehaviour {
 		_hp = hp + 0.0f;
 		_hpMax = hpMax + 0.0f;
 
-		bar = transform.FindChild("bar").gameObject;
-		bar_bg = transform.FindChild("bar_bg").gameObject;
+		bar = transform.Find("bar").gameObject;
+		bar_bg = transform.Find("bar_bg").gameObject;
 
 		RefreshUI ();
 	}

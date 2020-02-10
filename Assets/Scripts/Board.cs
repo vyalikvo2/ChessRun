@@ -2,6 +2,8 @@
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+
 // New
 public enum CellState
 {
@@ -29,16 +31,16 @@ public class Board : MonoBehaviour
 	[SerializeField]
 	public GameObject cellPrefab;
 
-	List<GameObject> piecesHighlighted = new List<GameObject>();
-	GameObject currentPosPieceHighligh;
+	List<HighlightPiece> piecesHighlighted = new List<HighlightPiece>();
+	HighlightPiece currentPosPieceHighligh;
 
 	[HideInInspector] public List<BasePiece> myPieces = null;
 	[HideInInspector] public List<BasePiece> enemyPieces = null;
-
-	public BasePiece currentPiece;
-
-	private Dictionary<char, GameObject> piecesPrefabs;
 	
+	private Dictionary<char, GameObject> piecesPrefabs;
+
+	private ScalableArrow currentArrow;
+
 	public void Setup()
 	{
 		game = GetComponent<Game> () as Game;
@@ -49,6 +51,8 @@ public class Board : MonoBehaviour
 		piecesPrefabs.Add (TypePiece.BUILDING_HOME, PrefabsList.home);
 		piecesPrefabs.Add (TypePiece.HORSE, PrefabsList.horse);
 		piecesPrefabs.Add (TypePiece.KING_HORSE, PrefabsList.king_horse);
+
+		Game.gameController.onNextActionChanged += onNextActionChanged;
 	}
 	
 
@@ -101,17 +105,11 @@ public class Board : MonoBehaviour
 		BasePiece basePiece = obj.GetComponent<BasePiece> () as BasePiece;
 
 		basePiece.relation = getRelationFromChar (s);
-		if (basePiece.relation == Relation.SELF) {
-			PieceDrag dragComponent = obj.AddComponent<PieceDrag> () as PieceDrag;
-			dragComponent.piece = basePiece;
-			basePiece.relation = Relation.SELF;
-		}
 
 		basePiece.Setup(pos);
 		addPiece(basePiece);
 
 	}
-
 
 	public BasePiece createPieceByType(char s){
 
@@ -140,65 +138,63 @@ public class Board : MonoBehaviour
 		cells [(int)piece.pos.y, (int)piece.pos.x].piece = piece;
 	}
 
-	public void setDraggingPiece(BasePiece piece)
+	private void onNextActionChanged(GameAction action)
 	{
-		currentPiece = piece;
-		if(currentPiece !=null)
+		Debug.Log(action.name);
+		switch (action.name)
 		{
-			highlightMoves(piece);
-		} else {
-			removeHighlightMoves();
+			case GameAction.MOVE:
+				showMoveToAction(action.cellFrom);
+				break;
 		}
 	}
-
-	public TurnData movePieceTo(Vector2 pos, BasePiece piece)
+	public void showMoveToAction(Cell cell)
 	{
-		TurnData turn = new TurnData();
-
-		Cell cell1 = cells [(int)piece.pos.y, (int)piece.pos.x];
-		Cell cell2 = cells [(int)pos.y, (int)pos.x];
-
-		if (cell2 == null) {
-			return turn;
+		if (!currentArrow)
+		{
+			GameObject arrowPrefab = Resources.Load("prefabs/ScalableArrow") as GameObject;
+			GameObject arrow = Instantiate(arrowPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+			arrow.transform.SetParent(transform);
+			currentArrow = arrow.GetComponent<ScalableArrow>();
+			currentArrow.Setup();
 		}
 
-		game.centerCamera(cell2.transform.position);
-
-		bool interaction = false;
-
-		if (cell2.piece) 
-		{
-			if (cell2.piece.relation == Relation.ENEMY) 
-			{
-				turn.killedPiece = cell2.piece;
-				killEnemy (cell2.piece);
-
-				Debug.Log ("KILL ENEMY");
-			} 
-			else if(cell2.piece.isInteractableWith(piece))
-			{
-				PieceInteraction.interact(cell1, cell2, piece, cell2.piece, pos);	
-				interaction = true;
-			} 
-			else if(cell2.piece.relation == Relation.BUILDING)
-			{
-				if(cell2.piece.GetComponent<Home>() != null)
-				{
-					Game.gameStateController.levelComplete();
-				}
-			}
-		} 
-			
-		if(!interaction) 
-		{
-			piece.pos = pos;
-			cell2.piece = cell1.piece;
-			cell1.piece = null;
-		}
-
-		return turn;
+		currentArrow.visible = true;
+		currentArrow.transform.position = new Vector3(cell.piece.transform.position.x, cell.piece.transform.position.y, 0);
+		
+		if(!currentPosPieceHighligh) highlightMoves(cell.piece);
 	}
 
+	public void updateDraggingAction(Vector3 pos)
+	{
+		Cell cell = Game.gameController.nextAction.cellFrom;
+		Vector3 pos1 = new Vector3(cell.pos.x * Game.CELL_SIZE + Game.CELL_SIZE/2, cell.pos.y * Game.CELL_SIZE + Game.CELL_SIZE/2, 0);
+		currentArrow.width = (int) Vector3.Distance(pos1, pos);
+
+		Vector3 direction = pos - pos1;
+		float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+		currentArrow.setRotation(angle);
+
+		recalculateDraggingAction(pos);
+	}
+
+	public void movePiece(Cell cell1, Cell cell2)
+	{
+		BasePiece piece = cell1.piece;
+		piece.pos = cell2.pos;
+		
+		cell2.piece = cell1.piece;
+		cell1.piece = null;
+	}
+
+	public void attackPiece(Cell cell1, Cell cell2)
+	{
+		killEnemy (cell2.piece);
+		cell1.piece.pos = cell2.pos;
+		cell2.piece = cell1.piece;
+		cell1.piece = null;
+	}
+	
 	public void killEnemy(BasePiece piece)
 	{
 		piece.gameObject.transform.SetParent (null);
@@ -209,10 +205,19 @@ public class Board : MonoBehaviour
 	{
 		for (int i=0; i<piece.moves.Count; i++) {
 			Vector2 p = piece.pos+piece.moves[i];
-			if (p.x < 0 || p.y<0 || !getCellAt(p) || !canMoveToCellAt(p) ) continue;
+			if (p.x < 0 || p.y < 0 || !getCellAt(p) || !canMoveToCellAt(p, piece) ) continue;
 			createHighLightAt(p);
 		}
 
+		if (piece.interactiveMoves != null)
+		{
+			for (int i=0; i<piece.interactiveMoves.Count; i++) {
+				Vector2 p = piece.pos+piece.interactiveMoves[i].move;
+				if (p.x < 0 || p.y < 0 || !getCellAt(p) || !canMoveToCellAt(p, piece) ) continue;
+				createHighLightAt(p);
+			}
+		}
+	
 		createHighLightAt(piece.pos, true);
 	}
 
@@ -224,88 +229,100 @@ public class Board : MonoBehaviour
 		component.pos = pos;
 
 		if (!isCurrentPos) {
-			piecesHighlighted.Add (highlight);
+			piecesHighlighted.Add (component);
 		} else {
 			component.currentSprite = component.cell_current;
-			currentPosPieceHighligh = highlight;
+			currentPosPieceHighligh = component;
 		}
 	}
 
+	public void clearMovingUI()
+	{
+		removeHighlightMoves();
+		currentArrow.visible = false;
+	}
 	public void removeHighlightMoves()
 	{
-		for (int i=0; i<piecesHighlighted.Count; i++) {
-			piecesHighlighted[i].transform.SetParent(null);
-			Destroy(piecesHighlighted[i]);
+		for (int i=0; i<piecesHighlighted.Count; i++) 
+		{
+			piecesHighlighted[i].gameObject.transform.SetParent(null);
+			Destroy(piecesHighlighted[i].gameObject);
+		}
+		
+		if (currentPosPieceHighligh) 
+		{
+			currentPosPieceHighligh.gameObject.transform.SetParent (null);
+			Destroy (currentPosPieceHighligh.gameObject);
 		}
 
-		if (currentPosPieceHighligh) {
-			currentPosPieceHighligh.transform.SetParent (null);
-			Destroy (currentPosPieceHighligh);
-		}
-
-		piecesHighlighted = new List<GameObject> ();
+		piecesHighlighted = new List<HighlightPiece> ();
 		currentPosPieceHighligh = null;
 	}
 
-	// drop piece to next cell or move to initial position
-	public void dragAndDropIfCan(BasePiece piece)
-	{
-		Vector3 worldPos = piece.transform.position;
-		bool foundMove = false;
-		Vector2 moveToPos = new Vector2(0,0);
-		for (int i=0; i<piece.moves.Count; i++) {
-			Vector2 p = piece.pos+piece.moves[i];
-			if (p.x < 0 || p.y<0 || !getCellAt(p)) continue;
-			if(Mathf.Round(worldPos.x*Game.COORDS_TO_POS) == p.x && Mathf.Round(worldPos.y*Game.COORDS_TO_POS)==p.y && canMoveToCellAt(p))
-			{
-				foundMove = true;
-				moveToPos = p;
-				break;
-			}
-		}
-
-		if (foundMove) {
-			movePieceTo(moveToPos, piece);
-		} else {
-			piece.RefreshPos ();
-		}
-	}
-
 	// lighing next cell that we can put in a piece
-	public void updateHighlightMoveTo(BasePiece piece)
+	public void recalculateDraggingAction(Vector3 pos)
 	{
-		Vector3 worldPos = piece.transform.position;
-
 		// find highlighet piece by pos
-		for (int i=0; i<piecesHighlighted.Count; i++) {
-			HighlightPiece pieceComponent = (piecesHighlighted [i].GetComponent<HighlightPiece>() as HighlightPiece);
-			if (pieceComponent.pos.x == Mathf.Round(worldPos.x*Game.COORDS_TO_POS) && 
-			    pieceComponent.pos.y == Mathf.Round(worldPos.y*Game.COORDS_TO_POS)) {
-
-				if(getCellAt(pieceComponent.pos).piece && getCellAt(pieceComponent.pos).piece.relation == Relation.ENEMY){
+		bool foundNextCell = false;
+		for (int i = 0; i < piecesHighlighted.Count; i++)
+		{
+			Vector2 nextBoardPos = new Vector2(Mathf.Floor(pos.x/Game.CELL_SIZE), Mathf.Floor(pos.y/Game.CELL_SIZE));
+			HighlightPiece pieceComponent = piecesHighlighted[i];
+			
+			if (pieceComponent.pos.x == nextBoardPos.x && pieceComponent.pos.y == nextBoardPos.y)
+			{
+				foundNextCell = true;
+				Cell prevCell = Game.gameController.nextAction.cellFrom;
+				Cell nextCell = getCellAt(nextBoardPos);
+				if(nextCell.piece && nextCell.piece.relation == Relation.ENEMY){
 					pieceComponent.currentSprite = pieceComponent.cell_attack;
-				} else {
+					Game.gameController.updateNextActionCell(nextCell, GameAction.ATTACK);
+				} 
+				else
+				{
 					pieceComponent.currentSprite = pieceComponent.cell_next;
+					string interactionType = PieceInteraction.getType(prevCell, nextCell);
+					
+					if (interactionType == PieceInteraction.NONE)
+					{
+						Game.gameController.updateNextActionCell(nextCell, GameAction.MOVE);
+					}
+					else if (interactionType == PieceInteraction.END_LEVEL || interactionType == PieceInteraction.END_LEVEL_FROM_HORSE)
+					{
+						Game.gameController.updateNextActionCell(nextCell, GameAction.END_LEVEL);
+					}
+					else
+					{
+						Game.gameController.updateNextActionCell(nextCell, GameAction.INTERACTION);
+					}
+					
 				}
-
+				
 			} else {
 				pieceComponent.currentSprite = pieceComponent.cell_highlighted;
 			}
 		}
 
+		if (!foundNextCell)
+		{
+			Game.gameController.updateNextActionCell(null, GameAction.MOVE);
+		}
+
 	}
 
-	public bool canMoveToCellAt(Vector2 pos){
+	public bool canMoveToCellAt(Vector2 pos, BasePiece piece){
 
 		Cell cell = getCellAt (pos);
 
-		if(!cell.piece)
+		if (!cell.piece)
 			return true;
+		
+		if (cell.piece.isInteractableWith(piece))
+		{
+			return true;
+		}
 
-		if (cell.piece.relation == Relation.SELF && !cell.piece.isInteractableWith(currentPiece))
-			return false;
-
-		return true;
+		return false;
 	}
 
 	public Cell getCellAt(Vector2 pos){
