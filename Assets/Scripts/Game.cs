@@ -6,7 +6,7 @@ public class Game : MonoBehaviour {
 
 	public static float TO_UNITS = 0.01f;
 	public static float TO_PIXELS = 1/TO_UNITS;
-	public static float CELL_SIZE = 70;
+	public static float CELL_SIZE = 150;
 	public static float POS_TO_COORDS = TO_UNITS * CELL_SIZE;
 	public static float COORDS_TO_POS = 1/(POS_TO_COORDS);
 
@@ -30,7 +30,13 @@ public class Game : MonoBehaviour {
 
 	private void setupLevels()
 	{
-		levels.Add (new string[] {"KOOOOE"});
+		levels.Add (new string[]
+		{
+			"1EO",
+			"1O11",
+			"O1O",
+			"OKO"
+		});
 
 		levels.Add (new string[] {"K#OOOE", 
 			                            "11#11111"});
@@ -58,8 +64,9 @@ public class Game : MonoBehaviour {
 		setupLevels ();
 		board.Setup ();
 		
-		//setLevel(GameData.choosedLevel);	
-		setLevel(3);
+		//GameData.choosedLevel = 0;
+		setLevel(GameData.choosedLevel);	
+
 	}
 
 
@@ -81,9 +88,13 @@ public class Game : MonoBehaviour {
 		setLevel(currentLevel);
 	}
 
-	public void centerCamera(Vector3 pos)
+	public void centerCamera(Vector3 pos, bool animate = true)
 	{
 		cameraLerp = pos + new Vector3(1, 1, -1);
+		if (!animate)
+		{
+			camera.transform.position = cameraLerp;
+		}
 	}
 	// Update is called once per frame
 	void Update () {

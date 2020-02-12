@@ -36,7 +36,7 @@ public class Cell : MonoBehaviour
     {
 		this.posMultiplier = Game.CELL_SIZE * Game.TO_UNITS;
 		this.pos = pos;
-		this.transform.position = new Vector3 (pos.x * posMultiplier, pos.y * posMultiplier, 0);
+		this.transform.localPosition = new Vector3 (pos.x * posMultiplier, pos.y * posMultiplier, 0);
 		if (Mathf.Round (pos.x + pos.y) % 2 == 0) 
 		{
 			bg = whiteCell;

@@ -76,20 +76,19 @@ public class Board : MonoBehaviour
 		for (int i=0; i<maxY; i++) {
 			for( var j=0;j<map[i].Length;j++){
 				if(map[i][j]=='#') continue;
-				GameObject obj = Instantiate(cellPrefab, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
+				GameObject obj = Instantiate(cellPrefab, gameObject.transform) as GameObject;
 				Cell cell = obj.GetComponent<Cell>();
 			
 				int i2 = maxY - i - 1;
 				cell.Setup(new Vector2(j,i2));
 
 				cells[i2,j] = cell;
-				obj.transform.SetParent(this.transform);
 
 				createPieceFromMap(map[i][j], new Vector2(j,i2));
 
 				if(map[i][j]=='K')
 				{
-					game.centerCamera(cell.piece.transform.position);
+					game.centerCamera(cell.transform.position, false);
 				}
 			}
 		}
@@ -101,7 +100,7 @@ public class Board : MonoBehaviour
 			return;
 
 		GameObject prefab = piecesPrefabs [s];
-		GameObject obj = game.engine.Instance (prefab);
+		GameObject obj = Instantiate (prefab, gameObject.transform, true);
 		BasePiece basePiece = obj.GetComponent<BasePiece> () as BasePiece;
 
 		basePiece.relation = getRelationFromChar (s);
@@ -145,7 +144,17 @@ public class Board : MonoBehaviour
 		{
 			case GameAction.MOVE:
 				showMoveToAction(action.cellFrom);
+				currentArrow.iconVisible = false;
 				break;
+			case GameAction.ATTACK:
+				currentArrow.iconVisible = true;
+				currentArrow.icon.sprite = InteractionIcon.ICON_ATTACK;
+				break;
+			case GameAction.INTERACTION:
+				currentArrow.iconVisible = true;
+				currentArrow.icon.sprite = InteractionIcon.ICON_INTERACTION;
+				break;
+			
 		}
 	}
 	public void showMoveToAction(Cell cell)
@@ -160,7 +169,7 @@ public class Board : MonoBehaviour
 		}
 
 		currentArrow.visible = true;
-		currentArrow.transform.position = new Vector3(cell.piece.transform.position.x, cell.piece.transform.position.y, 0);
+		currentArrow.transform.localPosition = new Vector3(cell.piece.transform.localPosition.x, cell.piece.transform.localPosition.y, 0);
 		
 		if(!currentPosPieceHighligh) highlightMoves(cell.piece);
 	}
@@ -168,7 +177,7 @@ public class Board : MonoBehaviour
 	public void updateDraggingAction(Vector3 pos)
 	{
 		Cell cell = Game.gameController.nextAction.cellFrom;
-		Vector3 pos1 = new Vector3(cell.pos.x * Game.CELL_SIZE + Game.CELL_SIZE/2, cell.pos.y * Game.CELL_SIZE + Game.CELL_SIZE/2, 0);
+		Vector3 pos1 = new Vector3(cell.pos.x * Game.CELL_SIZE, cell.pos.y * Game.CELL_SIZE, 0);
 		currentArrow.width = (int) Vector3.Distance(pos1, pos);
 
 		Vector3 direction = pos - pos1;
@@ -206,7 +215,7 @@ public class Board : MonoBehaviour
 		for (int i=0; i<piece.moves.Count; i++) {
 			Vector2 p = piece.pos+piece.moves[i];
 			if (p.x < 0 || p.y < 0 || !getCellAt(p) || !canMoveToCellAt(p, piece) ) continue;
-			createHighLightAt(p);
+			createHighLightAt(p, piece.pos);
 		}
 
 		if (piece.interactiveMoves != null)
@@ -214,18 +223,21 @@ public class Board : MonoBehaviour
 			for (int i=0; i<piece.interactiveMoves.Count; i++) {
 				Vector2 p = piece.pos+piece.interactiveMoves[i].move;
 				if (p.x < 0 || p.y < 0 || !getCellAt(p) || !canMoveToCellAt(p, piece) ) continue;
-				createHighLightAt(p);
+				createHighLightAt(p, piece.pos);
 			}
 		}
 	
-		createHighLightAt(piece.pos, true);
+		createHighLightAt(piece.pos, piece.pos, true);
 	}
 
-	private void createHighLightAt(Vector2 pos, bool isCurrentPos = false)
+	private void createHighLightAt(Vector2 pos, Vector2 posFrom, bool isCurrentPos = false)
 	{
 		GameObject highlight = game.engine.Instance (PrefabsList.cell_highlighted);
 		HighlightPiece component = highlight.GetComponent<HighlightPiece> () as HighlightPiece;
 		component.zIndex = ZIndex.PIECES_HIGHLIGHT;
+
+		component.animateScale(0, 1.0f);
+		component.setBoardPosition(posFrom);
 		component.pos = pos;
 
 		if (!isCurrentPos) {
@@ -266,7 +278,7 @@ public class Board : MonoBehaviour
 		bool foundNextCell = false;
 		for (int i = 0; i < piecesHighlighted.Count; i++)
 		{
-			Vector2 nextBoardPos = new Vector2(Mathf.Floor(pos.x/Game.CELL_SIZE), Mathf.Floor(pos.y/Game.CELL_SIZE));
+			Vector2 nextBoardPos = new Vector2(Mathf.Round(pos.x/Game.CELL_SIZE), Mathf.Round(pos.y/Game.CELL_SIZE));
 			HighlightPiece pieceComponent = piecesHighlighted[i];
 			
 			if (pieceComponent.pos.x == nextBoardPos.x && pieceComponent.pos.y == nextBoardPos.y)
@@ -318,6 +330,11 @@ public class Board : MonoBehaviour
 			return true;
 		
 		if (cell.piece.isInteractableWith(piece))
+		{
+			return true;
+		}
+
+		if (cell.piece.relation == Relation.ENEMY)
 		{
 			return true;
 		}

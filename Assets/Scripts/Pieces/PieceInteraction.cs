@@ -57,7 +57,7 @@ public class PieceInteraction : MonoBehaviour
 			c1.piece = null;
 			c2.piece = null;
 
-			newPiece.pos = c2.pos;
+			newPiece.setBoardPosition(c2.pos);
 			c2.piece = newPiece;
 			
 			newPiece.relation = Relation.SELF;
@@ -72,6 +72,8 @@ public class PieceInteraction : MonoBehaviour
 			c1.piece = newPiece1;
 			c2.piece = newPiece2;
 
+			newPiece1.setBoardPosition(c1.pos);
+			newPiece2.setBoardPosition(c1.pos);
 			newPiece1.pos = c1.pos;
 			newPiece2.pos = c2.pos;
 			

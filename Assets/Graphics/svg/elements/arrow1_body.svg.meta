@@ -4,6 +4,7 @@ ScriptedImporter:
   fileIDToRecycleName:
     100000: gameObject/arrow1_body
     400000: gameObject/arrow1_body/Transform
+    2800000: texAtlas
     21200000: gameObject/arrow1_body/SpriteRenderer
     21300000: sprite
     100100000: gameObject

@@ -26,21 +26,20 @@ public class GameInput : MonoBehaviour
         mouseBeginDragPos = Camera.main.ScreenToWorldPoint(touchPosition);
         mouseBeginDragPos = new Vector3(mouseBeginDragPos.x * Game.TO_PIXELS, mouseBeginDragPos.y * Game.TO_PIXELS, 0);
 
-        int posX = (int) Mathf.Floor(mouseBeginDragPos.x / Game.CELL_SIZE);
-        int posY = (int) Mathf.Floor(mouseBeginDragPos.y / Game.CELL_SIZE);
+        int posX = (int) Mathf.Round(mouseBeginDragPos.x / Game.CELL_SIZE);
+        int posY = (int) Mathf.Round(mouseBeginDragPos.y / Game.CELL_SIZE);
 
         if (posX > -1 && posY > -1 && posY < game.board.cells.Length && posX < 50)
         {
             Cell cell = game.board.cells[posY, posX];
 
-            if (cell && cell.piece)
+            if (cell && cell.piece && cell.piece.relation == Relation.SELF)
             {
                 isDragged = true;
                 currentCell = cell;
                 BasePiece piece = cell.piece;
                 beforeDragZIndex = piece.zIndex;
                 piece.zIndex = ZIndex.DRAGGING_PIECE;
-                
                 Debug.Log("begin drag at "+posX + " " +posY);
 
                 if (Game.gameController) {

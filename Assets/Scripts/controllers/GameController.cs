@@ -111,6 +111,11 @@ public class GameController : MonoBehaviour {
 				PieceInteraction.interact(action.cellFrom, action.cellTo);
 				break;
 		}
+
+		if (action.name != GameAction.END_LEVEL && action.cellTo )
+		{
+			game.centerCamera(action.cellTo.transform.position);
+		}
 	}
 	
 

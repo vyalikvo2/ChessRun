@@ -39,7 +39,7 @@ public class ScalableArrow : MonoBehaviour
          if (icon)
          {
             icon.transform.localPosition = new Vector3(((value-head_w/2)/body_w) / 2, 0,0);
-            icon.transform.localScale = new Vector3(0.4f,0.4f,0.4f);
+            icon.transform.localScale = Vector3.one * 0.6f;
          }
          _width = value;
       }

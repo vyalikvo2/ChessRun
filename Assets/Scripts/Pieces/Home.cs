@@ -16,11 +16,15 @@ public class Home : BasePiece
 		};
 
 		base.Setup (pos);
+
+		stats.attack = 0;
+		stats.health = 0;
+		stats.visible = false;
 	}
 	
 	public override bool isInteractableWith(BasePiece piece)
 	{
-		return piece.type == TypePiece.KING_HORSE;
+		return piece.type == TypePiece.KING_HORSE || piece.type == TypePiece.KING;
 	}
 	
 }

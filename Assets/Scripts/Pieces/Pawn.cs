@@ -4,8 +4,6 @@ using System.Collections.Generic;
 
 public class Pawn : BasePiece
 {
-	[HideInInspector] HealthBar health;
-
 	public override void Setup(Vector2 pos)
 	{	
 		moves = new List<Vector2> () {
@@ -25,6 +23,9 @@ public class Pawn : BasePiece
 		type = TypePiece.PAWN;
 
 		base.Setup (pos);
+
+		stats.attack = 1;
+		stats.health = 2;
 	}
 	
 }
