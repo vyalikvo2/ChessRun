@@ -64,7 +64,7 @@ public class Game : MonoBehaviour {
 		setupLevels ();
 		board.Setup ();
 		
-		//GameData.choosedLevel = 0;
+		//GameData.choosedLevel = 2;
 		setLevel(GameData.choosedLevel);	
 
 	}

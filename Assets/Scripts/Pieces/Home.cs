@@ -16,10 +16,6 @@ public class Home : BasePiece
 		};
 
 		base.Setup (pos);
-
-		stats.attack = 0;
-		stats.health = 0;
-		stats.visible = false;
 	}
 	
 	public override bool isInteractableWith(BasePiece piece)

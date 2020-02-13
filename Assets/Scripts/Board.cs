@@ -40,6 +40,7 @@ public class Board : MonoBehaviour
 	private Dictionary<char, GameObject> piecesPrefabs;
 
 	private ScalableArrow currentArrow;
+	private FightController fight;
 
 	public void Setup()
 	{
@@ -52,6 +53,9 @@ public class Board : MonoBehaviour
 		piecesPrefabs.Add (TypePiece.HORSE, PrefabsList.horse);
 		piecesPrefabs.Add (TypePiece.KING_HORSE, PrefabsList.king_horse);
 
+		fight = GetComponent<FightController>();
+		fight.Setup(this);
+		
 		Game.gameController.onNextActionChanged += onNextActionChanged;
 	}
 	
@@ -169,7 +173,7 @@ public class Board : MonoBehaviour
 		}
 
 		currentArrow.visible = true;
-		currentArrow.transform.localPosition = new Vector3(cell.piece.transform.localPosition.x, cell.piece.transform.localPosition.y, 0);
+		currentArrow.transform.localPosition = new Vector3(cell.transform.localPosition.x, cell.transform.localPosition.y, 0);
 		
 		if(!currentPosPieceHighligh) highlightMoves(cell.piece);
 	}
@@ -190,7 +194,8 @@ public class Board : MonoBehaviour
 	public void movePiece(Cell cell1, Cell cell2)
 	{
 		BasePiece piece = cell1.piece;
-		piece.pos = cell2.pos;
+		
+		Game.gameController.movePieceTo(piece, cell2.pos);
 		
 		cell2.piece = cell1.piece;
 		cell1.piece = null;
@@ -198,13 +203,18 @@ public class Board : MonoBehaviour
 
 	public void attackPiece(Cell cell1, Cell cell2)
 	{
-		killEnemy (cell2.piece);
+		fight.beginAttack(cell1, cell2);
+	}
+
+	public void processKilling(Cell cell1, Cell cell2)
+	{
+		killedOnMove (cell2.piece);
 		cell1.piece.pos = cell2.pos;
 		cell2.piece = cell1.piece;
 		cell1.piece = null;
 	}
 	
-	public void killEnemy(BasePiece piece)
+	public void killedOnMove(BasePiece piece)
 	{
 		piece.gameObject.transform.SetParent (null);
 		Destroy (piece.gameObject);
@@ -234,6 +244,8 @@ public class Board : MonoBehaviour
 	{
 		GameObject highlight = game.engine.Instance (PrefabsList.cell_highlighted);
 		HighlightPiece component = highlight.GetComponent<HighlightPiece> () as HighlightPiece;
+		component.Setup(pos);
+		
 		component.zIndex = ZIndex.PIECES_HIGHLIGHT;
 
 		component.animateScale(0, 1.0f);
@@ -271,6 +283,11 @@ public class Board : MonoBehaviour
 		currentPosPieceHighligh = null;
 	}
 
+	public Vector3 getLocal3Position(Vector2 pos)
+	{
+		return new Vector3(pos.x * Game.POS_TO_COORDS , pos.y * Game.POS_TO_COORDS, 0);
+	}
+	
 	// lighing next cell that we can put in a piece
 	public void recalculateDraggingAction(Vector3 pos)
 	{

@@ -1,40 +1,47 @@
 ﻿using UnityEngine;
 using System.Collections;
+using DG.Tweening;
 
-public class GameController : MonoBehaviour {
-	
+public class GameController : MonoBehaviour
+{
+
 	public static string gameState = GameState.MY_TURN_NO_HIGHLIGHT;
 
 	[HideInInspector] private Game game;
 	[HideInInspector] public GameAction nextAction;
-	
+
 	public event EventController.ActionEvent onNextActionChanged;
 
 	// Use this for initialization
-	void Start () {
+	void Start()
+	{
 		game = GetComponent<Game>() as Game;
 		nextAction = new GameAction();
-	}
-	
-	// Update is called once per frame
-	void Update () {
-
 	}
 
 	public void onPlayerBeginDragBoard(Cell cell)
 	{
 		changeState(GameState.MY_TURN_HIGHLIGHT_MOVES);
 		prepareNextAction(GameAction.MOVE, cell);
-		
-		Debug.Log("begin drag");
 	}
 
 	public void onPlayerEndDragBoard(Cell cell)
 	{
 		changeState(GameState.MY_TURN_NO_HIGHLIGHT);
 		processAction(nextAction);
-		
+
 		nextAction = new GameAction(); // reset next action
+	}
+
+	public void momentInteractionComplete()
+	{
+		changeState(GameState.MY_TURN_NO_HIGHLIGHT);
+	}
+
+	public static bool isInputState()
+	{
+		return gameState == GameState.MY_TURN_NO_HIGHLIGHT ||
+		       GameController.gameState == GameState.MY_TURN_HIGHLIGHT_MOVES;
 	}
 
 	public void levelComplete()
@@ -48,6 +55,11 @@ public class GameController : MonoBehaviour {
 	public void startLevel()
 	{
 		gameState = GameState.MY_TURN_NO_HIGHLIGHT;
+	}
+
+	public void fightEnded()
+	{
+		changeState(GameState.MY_TURN_NO_HIGHLIGHT);
 	}
 
 	void changeState(string nextState)
@@ -99,15 +111,17 @@ public class GameController : MonoBehaviour {
 			case GameAction.MOVE:
 				if (action.cellTo)
 				{
+					changeState(GameState.ANIMATING_MOVE);
 					game.board.movePiece(action.cellFrom, action.cellTo);
 				}
 				break;
 			
 			case GameAction.ATTACK:
+				changeState(GameState.ANIMATING_FIGHT);
 				game.board.attackPiece(action.cellFrom, action.cellTo);
 				break;
-			
 			case GameAction.INTERACTION:
+				changeState(GameState.ANIMATING_MOVE);
 				PieceInteraction.interact(action.cellFrom, action.cellTo);
 				break;
 		}
@@ -117,6 +131,18 @@ public class GameController : MonoBehaviour {
 			game.centerCamera(action.cellTo.transform.position);
 		}
 	}
-	
+
+	public void movePieceTo(BasePiece piece, Vector2 pos)
+	{
+		changeState(GameState.ANIMATING_MOVE);
+		Debug.Log(game.board.getLocal3Position(pos));
+		piece.transform.DOLocalMove(game.board.getLocal3Position(pos), 0.6f).OnComplete(setPieceCoord);
+
+		void setPieceCoord()
+		{
+			piece.pos = pos;
+			changeState(GameState.MY_TURN_NO_HIGHLIGHT);
+		}
+	}
 
 }

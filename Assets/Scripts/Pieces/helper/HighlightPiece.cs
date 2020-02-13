@@ -12,17 +12,4 @@ public class HighlightPiece : BasePiece {
 	{
 		base.Setup (pos);
 	}
-	
-	public override void RefreshPos()
-	{
-		//transform.localPosition = new Vector3 (pos.x * Game.POS_TO_COORDS, pos.y * Game.POS_TO_COORDS, 0);
-		positionTo = new Vector3 (pos.x * Game.POS_TO_COORDS, pos.y * Game.POS_TO_COORDS, 0);
-	}
-	
-	public override void setBoardPosition(Vector2 pos, bool animate = false)
-	{
-		this.pos = pos;
-		if(!animate) transform.localPosition = new Vector3 (pos.x * Game.POS_TO_COORDS, pos.y * Game.POS_TO_COORDS, 0);
-	}
-
 }

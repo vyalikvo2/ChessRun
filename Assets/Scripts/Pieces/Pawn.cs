@@ -23,7 +23,8 @@ public class Pawn : BasePiece
 		type = TypePiece.PAWN;
 
 		base.Setup (pos);
-
+		
+		createStats();
 		stats.attack = 1;
 		stats.health = 2;
 	}

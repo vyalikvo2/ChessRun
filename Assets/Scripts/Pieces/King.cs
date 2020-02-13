@@ -22,6 +22,8 @@ public class King : BasePiece
 		type = TypePiece.KING;
 
 		base.Setup (pos);
+		
+		createStats();
 	}
 
 }

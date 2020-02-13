@@ -1,8 +1,6 @@
-﻿using System;
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
+﻿using UnityEngine;
 using System.Collections.Generic;
+using DG.Tweening;
 
 public class BasePiece : MonoBehaviour
 {
@@ -15,12 +13,15 @@ public class BasePiece : MonoBehaviour
 		set { _pos = value; RefreshPos();}
 	}
 
+	public GameObject spriteObj;
 	private Sprite _currentSprite;
 	[HideInInspector] public Sprite currentSprite { 
 		get { return _currentSprite; } 
-		set { 
-			if((GetComponent<SpriteRenderer> () as SpriteRenderer).sprite != value){
-				(GetComponent<SpriteRenderer> () as SpriteRenderer).sprite = value;
+		set
+		{
+			if (!spriteObj) return;
+			if((spriteObj.GetComponent<SpriteRenderer> () as SpriteRenderer).sprite != value){
+				(spriteObj.GetComponent<SpriteRenderer> () as SpriteRenderer).sprite = value;
 				_currentSprite = value;
 			}
 		}
@@ -31,10 +32,7 @@ public class BasePiece : MonoBehaviour
 	public List<InteractiveMove> interactiveMoves;
 
 	public PieceStats stats;
-	protected Vector3 positionTo;
-
-	private float scaleTo = -1; // animation parameter
-
+	
 	private int _zIndex = 0;
 
 	public int zIndex
@@ -42,7 +40,8 @@ public class BasePiece : MonoBehaviour
 		get { return _zIndex; } 
 		set { 
 			_zIndex = value; 
-			GetComponent<SpriteRenderer>().sortingOrder = _zIndex;
+			if(spriteObj)
+				spriteObj.GetComponent<SpriteRenderer>().sortingOrder = _zIndex;
 			if(stats)
 				stats.zIndex = _zIndex;
 		}
@@ -50,8 +49,10 @@ public class BasePiece : MonoBehaviour
 
 	public virtual void Setup(Vector2 pos)
 	{
+		if(transform.childCount > 0)
+			spriteObj = transform.GetChild(0).gameObject;
+		
 		setBoardPosition(pos);
-		createStats();
 		
 		zIndex = ZIndex.PIECES_MY;
 	} 
@@ -68,38 +69,32 @@ public class BasePiece : MonoBehaviour
 	// recalculate setter (cause of mouse dragging)
 	public virtual void RefreshPos()
 	{
-		positionTo = new Vector3 (pos.x * Game.POS_TO_COORDS, pos.y * Game.POS_TO_COORDS, 0);
+		transform.localPosition = new Vector3(pos.x * Game.POS_TO_COORDS, pos.y * Game.POS_TO_COORDS, 0);
 	}
 
-	public virtual void setBoardPosition(Vector2 pos, bool animate = false)
+	public virtual void setBoardPosition(Vector2 pos)
 	{
 		this.pos = pos;
-		if(!animate) transform.localPosition = new Vector3 (pos.x * Game.POS_TO_COORDS, pos.y * Game.POS_TO_COORDS, 0);
 	}
 
 	public virtual void animateScale(float from, float to)
 	{
 		transform.localScale = Vector3.one * from;
-		scaleTo = to;
+		transform.DOScale(Vector3.one * to, 1f);
+	}
+
+	public virtual void killedAnimation(int direction, float delay, TweenCallback onPlayed)
+	{
+		SpriteRenderer spriteRenderer = spriteObj.GetComponent<SpriteRenderer>();
+		spriteRenderer.transform.DOLocalMove(spriteRenderer.transform.localPosition + new Vector3(0.2f,0.1f,0), 0.2f).SetDelay(delay);
+		spriteRenderer.transform.DOLocalRotate(new Vector3(0,0, -90f), 0.2f).SetDelay(delay);
+		transform.DOScale(new Vector3(0,0, 0), 0.4f).SetDelay(delay + 0.2f).OnComplete(onPlayed);
 	}
 
 	// need to be overrided ( returns interactiontype )
 	public virtual bool isInteractableWith(BasePiece piece)
 	{
 		return false;
-	}
-
-	private void Update()
-	{
-		if (positionTo != null)
-		{
-			transform.localPosition = Vector3.Lerp(transform.localPosition, positionTo, 0.20f);
-		}
-
-		if (scaleTo != -1)
-		{
-			transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one * scaleTo, 0.20f);
-		}
 	}
 
 	public void Destructor()

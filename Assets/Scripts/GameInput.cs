@@ -23,6 +23,8 @@ public class GameInput : MonoBehaviour
     
     public void beginTouch (Vector2 touchPosition)
     {
+        if (!GameController.isInputState()) return;
+        
         mouseBeginDragPos = Camera.main.ScreenToWorldPoint(touchPosition);
         mouseBeginDragPos = new Vector3(mouseBeginDragPos.x * Game.TO_PIXELS, mouseBeginDragPos.y * Game.TO_PIXELS, 0);
 
@@ -53,6 +55,7 @@ public class GameInput : MonoBehaviour
     // update touch position
     public void updateTouch(Vector2 touchPosition)
     {
+        if (!GameController.isInputState()) return;
         Vector3 pos3 = Camera.main.ScreenToWorldPoint(touchPosition);
         pos3 = new Vector3(pos3.x * Game.TO_PIXELS, pos3.y * Game.TO_PIXELS, 0);
         game.board.updateDraggingAction(pos3);
@@ -60,6 +63,7 @@ public class GameInput : MonoBehaviour
 
     public void endTouch ()
     {
+        if (!GameController.isInputState()) return;
         isDragged = false;
         if (currentCell && currentCell.piece)
         {

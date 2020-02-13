@@ -61,6 +61,8 @@ public class PieceInteraction : MonoBehaviour
 			c2.piece = newPiece;
 			
 			newPiece.relation = Relation.SELF;
+
+			Game.gameController.momentInteractionComplete();
 		} 
 		else if(type == KING_FROM_HORSE)
 		{
@@ -72,16 +74,16 @@ public class PieceInteraction : MonoBehaviour
 			c1.piece = newPiece1;
 			c2.piece = newPiece2;
 
-			newPiece1.setBoardPosition(c1.pos);
-			newPiece2.setBoardPosition(c1.pos);
 			newPiece1.pos = c1.pos;
-			newPiece2.pos = c2.pos;
-			
+			newPiece2.pos = c1.pos;
+
+			Game.gameController.movePieceTo(newPiece2, c2.pos);
+	
 			newPiece1.relation = Relation.SELF;
 			newPiece2.relation = Relation.SELF;
 		}
 	}
-
+	
 	public static void destroyPiece(BasePiece p){
 		p.gameObject.transform.SetParent(null);
 		p.Destructor();
