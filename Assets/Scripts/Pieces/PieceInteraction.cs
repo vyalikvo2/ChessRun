@@ -51,7 +51,9 @@ public class PieceInteraction : MonoBehaviour
 		if(type == KING_TO_HORSE)
 		{
 			BasePiece newPiece = game.board.createPieceByType(TypePiece.KING_HORSE);
-
+			newPiece.stats.attack = c1.piece.stats.attack + c2.piece.stats.attack;
+			newPiece.stats.health = c1.piece.stats.health + c2.piece.stats.health;
+			
 			destroyPiece(c1.piece);
 			destroyPiece(c2.piece);
 			c1.piece = null;
@@ -68,6 +70,25 @@ public class PieceInteraction : MonoBehaviour
 		{
 			BasePiece newPiece2 = game.board.createPieceByType(TypePiece.KING);
 			BasePiece newPiece1 = game.board.createPieceByType(TypePiece.HORSE);
+
+			int health = c1.piece.stats.health;
+
+			if (health == 1)
+			{
+				newPiece2.stats.health = 0;
+				newPiece1.stats.health = 1;
+			}
+			else
+			{
+				int maxHealth = newPiece1.stats.health;
+				newPiece1.stats.health = (int) health / 2;
+				if (newPiece1.stats.health > maxHealth)
+				{
+					newPiece1.stats.health = maxHealth;
+				}
+				newPiece2.stats.health = health - newPiece1.stats.health;
+			}
+			
 			
 			destroyPiece(c1.piece);
 	

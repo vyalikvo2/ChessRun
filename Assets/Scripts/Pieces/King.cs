@@ -24,6 +24,8 @@ public class King : BasePiece
 		base.Setup (pos);
 		
 		createStats();
+		stats.health = 2;
+		stats.attack = 1;
 	}
 
 }

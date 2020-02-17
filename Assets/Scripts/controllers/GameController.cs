@@ -5,7 +5,7 @@ using DG.Tweening;
 public class GameController : MonoBehaviour
 {
 
-	public static string gameState = GameState.MY_TURN_NO_HIGHLIGHT;
+	public static string state = GameState.MY_TURN;
 
 	[HideInInspector] private Game game;
 	[HideInInspector] public GameAction nextAction;
@@ -27,7 +27,7 @@ public class GameController : MonoBehaviour
 
 	public void onPlayerEndDragBoard(Cell cell)
 	{
-		changeState(GameState.MY_TURN_NO_HIGHLIGHT);
+		changeState(GameState.MY_TURN);
 		processAction(nextAction);
 
 		nextAction = new GameAction(); // reset next action
@@ -35,36 +35,45 @@ public class GameController : MonoBehaviour
 
 	public void momentInteractionComplete()
 	{
-		changeState(GameState.MY_TURN_NO_HIGHLIGHT);
+		endMove();
 	}
 
 	public static bool isInputState()
 	{
-		return gameState == GameState.MY_TURN_NO_HIGHLIGHT ||
-		       GameController.gameState == GameState.MY_TURN_HIGHLIGHT_MOVES;
+		return state == GameState.MY_TURN ||
+		       GameController.state == GameState.MY_TURN_HIGHLIGHT_MOVES;
 	}
 
 	public void levelComplete()
 	{
-		gameState = GameState.LEVEL_COMPLETE;
-		game.board.clearBoard ();
+		state = GameState.LEVEL_COMPLETE;
 		game.nextLevel ();
 	}
 
 
 	public void startLevel()
 	{
-		gameState = GameState.MY_TURN_NO_HIGHLIGHT;
+		state = GameState.MY_TURN;
 	}
 
-	public void fightEnded()
+	public void fightEnded(bool isGameOver)
 	{
-		changeState(GameState.MY_TURN_NO_HIGHLIGHT);
+		Debug.Log("FIGHT ENDED " + isGameOver);
+		if (!isGameOver)
+		{
+			endMove();
+		}
+		else
+		{
+			gameOver();
+		}
+		
 	}
 
 	void changeState(string nextState)
 	{
-		gameState = nextState;
+		Debug.Log("STATE " +nextState);
+		state = nextState;
 	}
 
 	public void prepareNextAction(string actionName, Cell cell)
@@ -117,8 +126,16 @@ public class GameController : MonoBehaviour
 				break;
 			
 			case GameAction.ATTACK:
-				changeState(GameState.ANIMATING_FIGHT);
+				changeState(GameState.MY_TURN_FIGHTING);
 				game.board.attackPiece(action.cellFrom, action.cellTo);
+				break;
+			case GameAction.ATTACK_HELP:
+				changeState(GameState.MY_TURN_FIGHTING);
+				game.board.attackHelpPiece(action.cellFrom, action.cellTo);
+				break;
+			case GameAction.DEFEND_HELP:
+				changeState(GameState.MY_TURN_FIGHTING);
+				game.board.defendHelpPiece(action.cellFrom, action.cellTo);
 				break;
 			case GameAction.INTERACTION:
 				changeState(GameState.ANIMATING_MOVE);
@@ -135,14 +152,55 @@ public class GameController : MonoBehaviour
 	public void movePieceTo(BasePiece piece, Vector2 pos)
 	{
 		changeState(GameState.ANIMATING_MOVE);
-		Debug.Log(game.board.getLocal3Position(pos));
 		piece.transform.DOLocalMove(game.board.getLocal3Position(pos), 0.6f).OnComplete(setPieceCoord);
 
 		void setPieceCoord()
 		{
 			piece.pos = pos;
-			changeState(GameState.MY_TURN_NO_HIGHLIGHT);
+			endMove();
 		}
 	}
 
+
+	public void beginBotMove()
+	{
+		changeState(GameState.ENEMY_MOVE);
+	}
+	
+	public void myMoveAttackCellContinue()
+	{
+		changeState(GameState.MY_TURN_FIGHTING);
+	}
+
+	public void myMoveComplete()
+	{
+		changeState(GameState.CALC_ENEMY_MOVE);
+		game.board.botLogic.makeBotMove();
+	}
+	
+	public void endMove()
+	{
+		if (state == GameState.ENEMY_MOVE) // enemy have made his move
+		{
+			changeState(GameState.MY_TURN);
+		} 
+		else if (state == GameState.MY_TURN_FIGHTING) // we attacked enemy
+		{
+			myMoveComplete();
+		}
+		else if (state == GameState.CALC_ENEMY_MOVE) // not found enemy move
+		{
+			changeState(GameState.MY_TURN);
+		} else 
+		{
+			myMoveComplete();
+		}
+	}
+
+	private void gameOver()
+	{
+		game.gameInput.setUIInput(true);
+		game.gameUI.setMenuVisible(true);
+		changeState(GameState.GAMEOVER);
+	}
 }

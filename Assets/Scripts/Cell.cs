@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class Cell : MonoBehaviour
@@ -9,10 +10,7 @@ public class Cell : MonoBehaviour
 
 	[HideInInspector]
     public Vector2 pos = Vector2.zero;
-
-    [HideInInspector]
-	private float posMultiplier = 0f;
-
+    
 	private Sprite _bg = null;
 	public Sprite bg { 
 		get { return _bg ; }
@@ -24,7 +22,10 @@ public class Cell : MonoBehaviour
 	}
 
 	[HideInInspector] public BasePiece piece;
+	[HideInInspector] public BasePiece attackerPiece;
 
+	public bool hasFight = false;
+	
 	private void renderBg()
 	{
 		SpriteRenderer renderer = GetComponent<SpriteRenderer> () as SpriteRenderer;
@@ -34,9 +35,8 @@ public class Cell : MonoBehaviour
 
 	public void Setup(Vector2 pos)
     {
-		this.posMultiplier = Game.CELL_SIZE * Game.TO_UNITS;
-		this.pos = pos;
-		this.transform.localPosition = new Vector3 (pos.x * posMultiplier, pos.y * posMultiplier, 0);
+	    this.pos = pos;
+		this.transform.localPosition = new Vector3 (pos.x *  Game.POS_TO_COORDS, pos.y *  Game.POS_TO_COORDS, 0);
 		if (Mathf.Round (pos.x + pos.y) % 2 == 0) 
 		{
 			bg = whiteCell;

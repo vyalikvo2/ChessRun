@@ -26,48 +26,52 @@ public class Board : MonoBehaviour
 
 	private Game game;
 
-	public  Cell[,] cells = new Cell[H, W];
+	public Cell[,] cells = new Cell[H, W];
 
-	[SerializeField]
-	public GameObject cellPrefab;
+	[SerializeField] public GameObject cellPrefab;
 
 	List<HighlightPiece> piecesHighlighted = new List<HighlightPiece>();
 	HighlightPiece currentPosPieceHighligh;
 
 	[HideInInspector] public List<BasePiece> myPieces = null;
 	[HideInInspector] public List<BasePiece> enemyPieces = null;
-	
+
 	private Dictionary<char, GameObject> piecesPrefabs;
 
 	private ScalableArrow currentArrow;
-	private FightController fight;
+	[HideInInspector] public FightController fight;
+	[HideInInspector] public BotLogic botLogic;
 
 	public void Setup()
 	{
-		game = GetComponent<Game> () as Game;
+		game = GetComponent<Game>() as Game;
 
-		piecesPrefabs = new Dictionary<char, GameObject> ();
-		piecesPrefabs.Add (TypePiece.KING, PrefabsList.king);
-		piecesPrefabs.Add (TypePiece.PAWN, PrefabsList.pawn);
-		piecesPrefabs.Add (TypePiece.BUILDING_HOME, PrefabsList.home);
-		piecesPrefabs.Add (TypePiece.HORSE, PrefabsList.horse);
-		piecesPrefabs.Add (TypePiece.KING_HORSE, PrefabsList.king_horse);
+		piecesPrefabs = new Dictionary<char, GameObject>();
+		piecesPrefabs.Add(TypePiece.KING, PrefabsList.king);
+		piecesPrefabs.Add(TypePiece.PAWN, PrefabsList.pawn);
+		piecesPrefabs.Add(TypePiece.BUILDING_HOME, PrefabsList.home);
+		piecesPrefabs.Add(TypePiece.HORSE, PrefabsList.horse);
+		piecesPrefabs.Add(TypePiece.KING_HORSE, PrefabsList.king_horse);
 
 		fight = GetComponent<FightController>();
 		fight.Setup(this);
-		
+
+		botLogic = GetComponent<BotLogic>();
+
 		Game.gameController.onNextActionChanged += onNextActionChanged;
 	}
-	
 
-    public void CreateSolid(int w, int h)
-    {
-		for (int i=0; i<h; i++) {
-			for( var j=0;j<w;j++){
+
+	public void CreateSolid(int w, int h)
+	{
+		for (int i = 0; i < h; i++)
+		{
+			for (var j = 0; j < w; j++)
+			{
 				GameObject obj = Instantiate(cellPrefab, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
 				Cell cell = obj.GetComponent<Cell>();
 				cell.Setup(new Vector2(j, i));
-				cells[i,j] = cell;
+				cells[i, j] = cell;
 				obj.transform.SetParent(this.transform);
 			}
 		}
@@ -77,20 +81,22 @@ public class Board : MonoBehaviour
 	public void CreateByMap(string[] map)
 	{
 		int maxY = map.Length;
-		for (int i=0; i<maxY; i++) {
-			for( var j=0;j<map[i].Length;j++){
-				if(map[i][j]=='#') continue;
+		for (int i = 0; i < maxY; i++)
+		{
+			for (var j = 0; j < map[i].Length; j++)
+			{
+				if (map[i][j] == '#') continue;
 				GameObject obj = Instantiate(cellPrefab, gameObject.transform) as GameObject;
 				Cell cell = obj.GetComponent<Cell>();
-			
+
 				int i2 = maxY - i - 1;
-				cell.Setup(new Vector2(j,i2));
+				cell.Setup(new Vector2(j, i2));
 
-				cells[i2,j] = cell;
+				cells[i2, j] = cell;
 
-				createPieceFromMap(map[i][j], new Vector2(j,i2));
+				createPieceFromMap(map[i][j], new Vector2(j, i2));
 
-				if(map[i][j]=='K')
+				if (map[i][j] == 'K')
 				{
 					game.centerCamera(cell.transform.position, false);
 				}
@@ -98,39 +104,42 @@ public class Board : MonoBehaviour
 		}
 	}
 
-	private void createPieceFromMap(char s, Vector2 pos){
+	private void createPieceFromMap(char s, Vector2 pos)
+	{
 
 		if (!piecesPrefabs.ContainsKey(s))
 			return;
 
-		GameObject prefab = piecesPrefabs [s];
-		GameObject obj = Instantiate (prefab, gameObject.transform, true);
-		BasePiece basePiece = obj.GetComponent<BasePiece> () as BasePiece;
+		GameObject prefab = piecesPrefabs[s];
+		GameObject obj = Instantiate(prefab, gameObject.transform, true);
+		BasePiece basePiece = obj.GetComponent<BasePiece>() as BasePiece;
 
-		basePiece.relation = getRelationFromChar (s);
+		basePiece.relation = getRelationFromChar(s);
 
 		basePiece.Setup(pos);
 		addPiece(basePiece);
 
 	}
 
-	public BasePiece createPieceByType(char s){
+	public BasePiece createPieceByType(char s)
+	{
 
 		if (!piecesPrefabs.ContainsKey(s))
 			return null;
 
-		GameObject prefab = piecesPrefabs [s];
-		GameObject obj = game.engine.Instance (prefab);
-		BasePiece basePiece = obj.GetComponent<BasePiece> () as BasePiece;
-		basePiece.Setup(new Vector2(0,0));
+		GameObject prefab = piecesPrefabs[s];
+		GameObject obj = game.engine.Instance(prefab);
+		BasePiece basePiece = obj.GetComponent<BasePiece>() as BasePiece;
+		basePiece.Setup(new Vector2(0, 0));
 
 		return basePiece;
 	}
 
-	int getRelationFromChar(char s){
+	int getRelationFromChar(char s)
+	{
 		if (s == 'K' || s == 'H')
 			return Relation.SELF;
-		if(s == 'E')
+		if (s == 'E')
 			return Relation.BUILDING;
 
 		return Relation.ENEMY;
@@ -138,7 +147,7 @@ public class Board : MonoBehaviour
 
 	public void addPiece(BasePiece piece)
 	{
-		cells [(int)piece.pos.y, (int)piece.pos.x].piece = piece;
+		cells[(int) piece.pos.y, (int) piece.pos.x].piece = piece;
 	}
 
 	private void onNextActionChanged(GameAction action)
@@ -158,9 +167,10 @@ public class Board : MonoBehaviour
 				currentArrow.iconVisible = true;
 				currentArrow.icon.sprite = InteractionIcon.ICON_INTERACTION;
 				break;
-			
+
 		}
 	}
+
 	public void showMoveToAction(Cell cell)
 	{
 		if (!currentArrow)
@@ -173,9 +183,10 @@ public class Board : MonoBehaviour
 		}
 
 		currentArrow.visible = true;
-		currentArrow.transform.localPosition = new Vector3(cell.transform.localPosition.x, cell.transform.localPosition.y, 0);
-		
-		if(!currentPosPieceHighligh) highlightMoves(cell.piece);
+		currentArrow.transform.localPosition =
+			new Vector3(cell.transform.localPosition.x, cell.transform.localPosition.y, 0);
+
+		if (!currentPosPieceHighligh) highlightMoves(cell.piece);
 	}
 
 	public void updateDraggingAction(Vector3 pos)
@@ -194,9 +205,9 @@ public class Board : MonoBehaviour
 	public void movePiece(Cell cell1, Cell cell2)
 	{
 		BasePiece piece = cell1.piece;
-		
+
 		Game.gameController.movePieceTo(piece, cell2.pos);
-		
+
 		cell2.piece = cell1.piece;
 		cell1.piece = null;
 	}
@@ -205,16 +216,67 @@ public class Board : MonoBehaviour
 	{
 		fight.beginAttack(cell1, cell2);
 	}
-
-	public void processKilling(Cell cell1, Cell cell2)
+	
+	public void continueFight(Cell cell2)
 	{
-		killedOnMove (cell2.piece);
-		cell1.piece.pos = cell2.pos;
-		cell2.piece = cell1.piece;
-		cell1.piece = null;
+		Game.gameController.myMoveAttackCellContinue();
+		if (cell2.attackerPiece.relation == Relation.SELF)
+		{
+			fight.animateFightCellAttackerAttack(cell2);
+		}
+		else if(cell2.piece.relation == Relation.SELF)
+		{
+			fight.animateFightCellDefenderAttack(cell2);
+		}
+	}
+
+	public void attackHelpPiece(Cell cell1, Cell cell2)
+	{
+		fight.animateAllyHelpAttack(cell1, cell2);
 	}
 	
-	public void killedOnMove(BasePiece piece)
+	public void defendHelpPiece(Cell cell1, Cell cell2)
+	{
+		fight.animateAllyHelpDefend(cell1, cell2);
+	}
+	
+	public bool processKilling(Cell fightCell, int fightStatus)
+	{
+		Debug.Log("KILLING AT " + fightCell.pos);
+		bool gameOver = false;
+		
+		if (fightStatus == FightController.KILLED_DEFENDER)
+		{
+			if (fightCell.piece.relation == Relation.SELF && (fightCell.piece.type == TypePiece.KING || fightCell.piece.type == TypePiece.KING_HORSE)) // check gameover
+				gameOver = true;
+
+			destroyPiece (fightCell.piece);
+			fightCell.piece = fightCell.attackerPiece;
+		} 
+		else if (fightStatus == FightController.KILLED_ATTACKER)
+		{
+			if (fightCell.attackerPiece.relation == Relation.SELF && (fightCell.piece.type == TypePiece.KING || fightCell.piece.type == TypePiece.KING_HORSE)) // check gameover
+				gameOver = true;
+			
+			destroyPiece (fightCell.attackerPiece);
+		}
+		
+		fightCell.attackerPiece = null;
+		fightCell.hasFight = false;
+
+		Debug.Log("GAMEOVER "+ gameOver);
+		return gameOver;
+	}
+
+	public void createFightAtCell(Cell attacker, Cell defender)
+	{
+		defender.attackerPiece = attacker.piece;
+		defender.attackerPiece.pos = defender.pos;
+		defender.hasFight = true;
+		attacker.piece = null;
+	}
+	
+	public void destroyPiece(BasePiece piece)
 	{
 		piece.gameObject.transform.SetParent (null);
 		Destroy (piece.gameObject);
@@ -231,8 +293,8 @@ public class Board : MonoBehaviour
 		if (piece.interactiveMoves != null)
 		{
 			for (int i=0; i<piece.interactiveMoves.Count; i++) {
-				Vector2 p = piece.pos+piece.interactiveMoves[i].move;
-				if (p.x < 0 || p.y < 0 || !getCellAt(p) || !canMoveToCellAt(p, piece) ) continue;
+				Vector2 p = piece.pos + piece.interactiveMoves[i].move;
+				if (p.x < 0 || p.y < 0 || !getCellAt(p) || !canMoveToCellAt(p, piece, true) ) continue;
 				createHighLightAt(p, piece.pos);
 			}
 		}
@@ -303,9 +365,28 @@ public class Board : MonoBehaviour
 				foundNextCell = true;
 				Cell prevCell = Game.gameController.nextAction.cellFrom;
 				Cell nextCell = getCellAt(nextBoardPos);
-				if(nextCell.piece && nextCell.piece.relation == Relation.ENEMY){
-					pieceComponent.currentSprite = pieceComponent.cell_attack;
-					Game.gameController.updateNextActionCell(nextCell, GameAction.ATTACK);
+				
+				if(nextCell.piece && (nextCell.piece.relation == Relation.ENEMY || nextCell.hasFight))
+				{
+					if (nextCell.hasFight)
+					{
+						if (nextCell.piece.relation == Relation.ENEMY && nextCell.attackerPiece.relation == Relation.SELF)
+						{
+							pieceComponent.currentSprite = pieceComponent.cell_attack;
+							Game.gameController.updateNextActionCell(nextCell, GameAction.ATTACK_HELP);
+						}
+						else if (nextCell.piece.relation == Relation.SELF && nextCell.attackerPiece.relation == Relation.ENEMY)
+						{
+							pieceComponent.currentSprite = pieceComponent.cell_attack;
+							Game.gameController.updateNextActionCell(nextCell, GameAction.DEFEND_HELP);
+						}
+						
+					}
+					else if(nextCell.piece.relation == Relation.ENEMY)
+					{
+						pieceComponent.currentSprite = pieceComponent.cell_attack;
+						Game.gameController.updateNextActionCell(nextCell, GameAction.ATTACK);
+					}
 				} 
 				else
 				{
@@ -339,12 +420,15 @@ public class Board : MonoBehaviour
 
 	}
 
-	public bool canMoveToCellAt(Vector2 pos, BasePiece piece){
+	public bool canMoveToCellAt(Vector2 pos, BasePiece piece, bool isInteraction = false){
 
 		Cell cell = getCellAt (pos);
 
 		if (!cell.piece)
 			return true;
+
+		if (cell.piece.relation == Relation.ENEMY && isInteraction)
+			return false;
 		
 		if (cell.piece.isInteractableWith(piece))
 		{
@@ -352,6 +436,11 @@ public class Board : MonoBehaviour
 		}
 
 		if (cell.piece.relation == Relation.ENEMY)
+		{
+			return true;
+		}
+		
+		if (cell.hasFight && (cell.piece.relation == Relation.ENEMY || cell.attackerPiece.relation == Relation.ENEMY))
 		{
 			return true;
 		}

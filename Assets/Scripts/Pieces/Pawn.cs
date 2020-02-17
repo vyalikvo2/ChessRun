@@ -12,7 +12,7 @@ public class Pawn : BasePiece
 
 		movesAttack = new List<Vector2> () {
 			new Vector2(-1, 1), // top left
-			new Vector2(-1, 1) // top right
+			new Vector2(1, 1) // top right
 		};
 
 		/*GameObject go = Instantiate (PrefabsList.UI_Enemy_Healthbar, new Vector3 (0, 0, 0), Quaternion.identity) as GameObject;

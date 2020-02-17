@@ -32,6 +32,7 @@ public class BasePiece : MonoBehaviour
 	public List<InteractiveMove> interactiveMoves;
 
 	public PieceStats stats;
+	public int fightStatus = FightController.FIGHT_STATUS_NORMAL;
 	
 	private int _zIndex = 0;
 
@@ -61,8 +62,6 @@ public class BasePiece : MonoBehaviour
 		GameObject statsPrefab = Resources.Load("prefabs/PieceStats") as GameObject;
 		GameObject statsObj = Instantiate(statsPrefab, gameObject.transform) as GameObject;
 		stats = statsObj.GetComponent<PieceStats>();
-		stats.health = 10;
-		stats.attack = 3;
 		stats.transform.localPosition = new Vector3(0,0,0);
 	}
 
@@ -86,9 +85,20 @@ public class BasePiece : MonoBehaviour
 	public virtual void killedAnimation(int direction, float delay, TweenCallback onPlayed)
 	{
 		SpriteRenderer spriteRenderer = spriteObj.GetComponent<SpriteRenderer>();
-		spriteRenderer.transform.DOLocalMove(spriteRenderer.transform.localPosition + new Vector3(0.2f,0.1f,0), 0.2f).SetDelay(delay);
-		spriteRenderer.transform.DOLocalRotate(new Vector3(0,0, -90f), 0.2f).SetDelay(delay);
+		spriteRenderer.transform.DOLocalMove(spriteRenderer.transform.localPosition + new Vector3(0.4f,0.1f,0) * direction, 0.2f)
+			.SetDelay(delay);
+		spriteRenderer.transform.DOLocalRotate(new Vector3(0,0, -90f)*direction, 0.2f).SetDelay(delay);
 		transform.DOScale(new Vector3(0,0, 0), 0.4f).SetDelay(delay + 0.2f).OnComplete(onPlayed);
+	}
+
+	public void setFightStatus(int fightStatus, float time = 0.2f)
+	{
+		Vector3 statusPosition = Vector3.zero;
+		this.fightStatus = fightStatus;
+		if (fightStatus == FightController.FIGHT_STATUS_DEFENDER)
+			statusPosition = new Vector3(1f, 0, 0);
+		
+		stats.transform.DOLocalMove(statusPosition, time);
 	}
 
 	// need to be overrided ( returns interactiontype )

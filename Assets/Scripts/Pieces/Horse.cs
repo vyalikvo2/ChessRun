@@ -22,6 +22,10 @@ public class Horse : BasePiece
 		type = TypePiece.HORSE;
 		
 		base.Setup (pos);
+		
+		createStats();
+		stats.health = 2;
+		stats.attack = 2;
 	}
 	
 	public override bool isInteractableWith(BasePiece piece)

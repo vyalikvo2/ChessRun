@@ -23,6 +23,7 @@ public class KingHorse : BasePiece
 		{
 			new InteractiveMove(new Vector2(-1, 1), PieceInteraction.KING_FROM_HORSE), // top left
 			new InteractiveMove(new Vector2( 1,-1), PieceInteraction.KING_FROM_HORSE), // bottom right
+			new InteractiveMove(new Vector2( -1,-1), PieceInteraction.KING_FROM_HORSE), // bottom left
 			new InteractiveMove(new Vector2( 1, 1), PieceInteraction.KING_FROM_HORSE), // top right
 			new InteractiveMove(new Vector2( 0, 1), PieceInteraction.KING_FROM_HORSE), // top
 			new InteractiveMove(new Vector2( 0,-1), PieceInteraction.KING_FROM_HORSE), // bottom
@@ -33,6 +34,10 @@ public class KingHorse : BasePiece
 		type = TypePiece.KING_HORSE;
 		
 		base.Setup (pos);
+		
+		createStats();
+		stats.health = 2;
+		stats.attack = 2;
 	}
 	
 }

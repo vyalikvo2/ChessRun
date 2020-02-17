@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class Game : MonoBehaviour {
 
@@ -14,12 +15,15 @@ public class Game : MonoBehaviour {
 
 	[HideInInspector] public Engine engine;
 	public static GameController gameController;
+	
+	[HideInInspector] public GameInput gameInput;
 
 
 	[HideInInspector] public Board board;
 
 	[SerializeField] public GameUI gameUI;
-
+	[HideInInspector] public FightUI fightUI;
+	
 	private Vector3 cameraLerp;
 
 
@@ -32,54 +36,79 @@ public class Game : MonoBehaviour {
 	{
 		levels.Add (new string[]
 		{
-			"1EO",
-			"1O11",
-			"O1O",
-			"OKO"
+			"E",
+			"O",
+			"1",
+			"K"
 		});
 
-		levels.Add (new string[] {"K#OOOE", 
-			                            "11#11111"});
-
-		levels.Add (new string[] {"K#OOE", 
-			                            "H##"});
+		levels.Add (new string[] {"EO", 
+			                            "1O1",
+			                            "O1O",
+			                            "OKO"});
 		
-		levels.Add (new string[] {"##K#O#O", 
-			                            "O#H#O##",
-			                            "#####O",
-			                            "EO####"
+		levels.Add (new string[] {"##E", 
+										"##O", 
+										"##O", 
+			                            "111",
+			                            "1111",
+			                            "1111",
+			                            "1111",
+			                            "1111",
+			                            "1111",
+			                            "OOOO",
+			                            "KH"
 		});
+		
+		levels.Add (new string[] {"##OOOOOO#",
+			"O#EO#####", 
+			"K#######O",
+			"H#####O#O",
+			"O#O#####O",
+			"####OOH"
+		});
+
 
 	}
 
 	// Use this for initialization
 	void Start () {
 
-		engine = GetComponent<Engine> () as Engine;
-		board = GetComponent<Board>() as Board;
-		gameController = GetComponent<GameController>() as GameController;
+		engine = GetComponent<Engine> ();
+		board = GetComponent<Board>();
+		fightUI = GetComponent<FightUI>();
+		gameController = GetComponent<GameController>();
+		gameInput = GetComponent<GameInput>();
+		gameUI = GetComponent<GameUI>();
 
 		PieceInteraction.game = this;
 
 		setupLevels ();
 		board.Setup ();
 		
-		//GameData.choosedLevel = 2;
+		GameData.choosedLevel = 2;
 		setLevel(GameData.choosedLevel);	
-
+		
+		gameUI.setMenuVisible(false);
 	}
 
 
 	public void setLevel(int level)
 	{
-
+		board.clearBoard();
+		
 		currentLevel = level;	
 
 		Debug.Log ("Setup level "+currentLevel);
 		board.CreateByMap (levels [currentLevel]);
 		gameController.startLevel();
 
-		gameUI.Txt_level.text = "Уровень: "+ (currentLevel+1);
+		gameUI.levelText.GetComponent<Text>().text = "Уровень: "+ (currentLevel+1);
+	}
+
+	public void replayLevel()
+	{
+		setLevel(currentLevel);
 	}
 
 	public void nextLevel()
