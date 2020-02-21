@@ -37,6 +37,8 @@ public class Game : MonoBehaviour {
 		levels.Add (new string[]
 		{
 			"E",
+			"OO",
+			"PP",
 			"K"
 		});
 
@@ -92,7 +94,7 @@ public class Game : MonoBehaviour {
 		setupLevels ();
 		board.Setup ();
 		
-		GameData.choosedLevel = 2;
+		GameData.choosedLevel = 0;
 		setLevel(GameData.choosedLevel);	
 		
 		gameUI.setMenu(GameUI.MENU_NONE);

@@ -4,27 +4,31 @@ using DG.Tweening;
 
 public class BasePiece : MonoBehaviour
 {
-	private static string PREFIX = "images/pieces/";
-	public static string PAWN_WHITE = PREFIX+"pawn_white";
-	public static string PAWN_BLACK = PREFIX+"pawn_black";
-	public static string KING_WHITE = PREFIX+"king_white";	
-	public static string KING_BLACK = PREFIX+"king_black";	
-	public static string HORSE_WHITE = PREFIX+"horse_white";	
-	public static string HORSE_BLACK = PREFIX+"horse_black";	
-	public static string BISHOP_WHITE = PREFIX+"bishop_white";	
-	public static string BISHOP_BLACK = PREFIX+"bishop_black";	
-	public static string QUEEN_WHITE = PREFIX+"queen_white";	
-	public static string QUEEN_BLACK = PREFIX+"queen_black";	
-	public static string ROOK_WHITE = PREFIX+"rook_white";	
-	public static string ROOK_BLACK = PREFIX+"rook_black";	
+	private const string PREFIX = "images/pieces/";
+	// pieces
+	public const string PAWN_WHITE = PREFIX+"pawn_white";
+	public const string PAWN_BLACK = PREFIX+"pawn_black";
+	public const string KING_WHITE = PREFIX+"king_white";	
+	public const string KING_BLACK = PREFIX+"king_black";	
+	public const string HORSE_WHITE = PREFIX+"horse_white";	
+	public const string HORSE_BLACK = PREFIX+"horse_black";	
+	public const string BISHOP_WHITE = PREFIX+"bishop_white";	
+	public const string BISHOP_BLACK = PREFIX+"bishop_black";	
+	public const string QUEEN_WHITE = PREFIX+"queen_white";	
+	public const string QUEEN_BLACK = PREFIX+"queen_black";	
+	public const string ROOK_WHITE = PREFIX+"rook_white";	
+	public const string ROOK_BLACK = PREFIX+"rook_black";
+	// buildings
+	public const string BUILDING_HOME_CASTLE = PREFIX+"home_castle";	
 	
-	private static string CELL_PREFIX = "images/board/";
-	public static string H_CELL_ENEMY = CELL_PREFIX+"cell_enemy";	
-	public static string H_CELL_HIGHLIGHTED = CELL_PREFIX+"cell_highlighted";
-	public static string H_CELL_MOVE_TO = CELL_PREFIX+"cell_moveto";
-	public static string H_CELL_BLACK = CELL_PREFIX+"cell_bg_black";	
-	public static string H_CELL_WHITE = CELL_PREFIX+"cell_bg_white";	
-	public static string H_CELL_CURRENT = CELL_PREFIX+"cell_curposition";
+	private const string CELL_PREFIX = "images/board/";
+	// cells
+	public const string H_CELL_ENEMY = CELL_PREFIX+"cell_enemy";	
+	public const string H_CELL_HIGHLIGHTED = CELL_PREFIX+"cell_highlighted";
+	public const string H_CELL_MOVE_TO = CELL_PREFIX+"cell_moveto";
+	public const string H_CELL_BLACK = CELL_PREFIX+"cell_bg_black";	
+	public const string H_CELL_WHITE = CELL_PREFIX+"cell_bg_white";	
+	public const string H_CELL_CURRENT = CELL_PREFIX+"cell_curposition";
 	
 	public int relation = Relation.SELF;
 	public char type	= TypePiece.NONE;
@@ -42,9 +46,12 @@ public class BasePiece : MonoBehaviour
 		get { return _sprite; }
 		set
 		{
-			//if(_)
+			if (_sprite == value) return;
+			_sprite = value;
+			currentSprite = ResourceCache.getSprite(_sprite);
 		}
 	}
+	
 	public GameObject spriteObj;
 	private Sprite _currentSprite;
 	[HideInInspector] public Sprite currentSprite { 
@@ -91,7 +98,7 @@ public class BasePiece : MonoBehaviour
 	} 
 	public void createStats()
 	{
-		GameObject statsPrefab = Resources.Load("prefabs/PieceStats") as GameObject;
+		GameObject statsPrefab = ResourceCache.getPrefab("prefabs/PieceStats");
 		GameObject statsObj = Instantiate(statsPrefab, gameObject.transform) as GameObject;
 		stats = statsObj.GetComponent<PieceStats>();
 		stats.transform.localPosition = new Vector3(0,0,0);

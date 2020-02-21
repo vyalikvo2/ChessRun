@@ -7,7 +7,7 @@ public class Pawn : BasePiece
 	public override void Setup(Vector2 pos)
 	{	
 		moves = new List<Vector2> () {
-			new Vector2(1, 	0), // top
+			new Vector2(0, 	1), // top
 		};
 
 		movesAttack = new List<Vector2> () {
@@ -15,7 +15,7 @@ public class Pawn : BasePiece
 			new Vector2(1, 1) // top right
 		};
 		
-		type = TypePiece.PAWN;
+		type = TypePiece.PAWN_ENEMY;
 
 		base.Setup (pos);
 		

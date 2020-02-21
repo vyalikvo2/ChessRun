@@ -5,21 +5,6 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using DG.Tweening;
 
-// New
-public enum CellState
-{
-    None,
-    Friendly,
-    Enemy,
-    Free,
-    OutOfBounds
-}
-
-public class TurnData {
-	public BasePiece killedPiece = null;
-	public float damageDealed = 0;
-}
-
 public class Board : MonoBehaviour
 {
 	public static int W = 50;
@@ -50,6 +35,7 @@ public class Board : MonoBehaviour
 		piecesPrefabs = new Dictionary<char, GameObject>();
 		piecesPrefabs.Add(TypePiece.KING, PrefabsList.king);
 		piecesPrefabs.Add(TypePiece.PAWN, PrefabsList.pawn);
+		piecesPrefabs.Add(TypePiece.PAWN_ENEMY, PrefabsList.pawn);
 		piecesPrefabs.Add(TypePiece.BUILDING_HOME, PrefabsList.home);
 		piecesPrefabs.Add(TypePiece.HORSE, PrefabsList.horse);
 		piecesPrefabs.Add(TypePiece.KING_HORSE, PrefabsList.king_horse);
@@ -116,8 +102,10 @@ public class Board : MonoBehaviour
 		BasePiece basePiece = obj.GetComponent<BasePiece>() as BasePiece;
 
 		basePiece.relation = getRelationFromChar(s);
-
+		
+		
 		basePiece.Setup(pos);
+		basePiece.sprite = getSpriteNameFromChar(s);
 		addPiece(basePiece);
 
 	}
@@ -136,12 +124,53 @@ public class Board : MonoBehaviour
 		return basePiece;
 	}
 
+	string getSpriteNameFromChar(char c)
+	{
+		switch (c)
+		{
+			//self
+			case TypePiece.KING:
+				return BasePiece.KING_WHITE;
+			case TypePiece.PAWN:
+				return BasePiece.PAWN_WHITE;
+			case TypePiece.HORSE:
+				return BasePiece.HORSE_WHITE;
+			case TypePiece.BISHOP:
+				return BasePiece.BISHOP_WHITE;
+			case TypePiece.ROOK:
+				return BasePiece.ROOK_WHITE;
+			case TypePiece.QUEEN:
+				return BasePiece.QUEEN_WHITE;
+			// enemy
+			case TypePiece.PAWN_ENEMY:
+				return BasePiece.PAWN_BLACK;
+			case TypePiece.HORSE_ENEMY:
+				return BasePiece.HORSE_BLACK;
+			case TypePiece.BISHOP_ENEMY:
+				return BasePiece.BISHOP_BLACK;
+			case TypePiece.ROOK_ENEMY:
+				return BasePiece.ROOK_BLACK;
+			case TypePiece.QUEEN_ENEMY:
+				return BasePiece.QUEEN_BLACK;
+			//buildings
+			case TypePiece.BUILDING_HOME:
+				return BasePiece.BUILDING_HOME_CASTLE;
+		}
+
+		return BasePiece.KING_WHITE;
+	}
+	
 	int getRelationFromChar(char s)
 	{
 		if (s == 'K' || s == 'H')
 			return Relation.SELF;
 		if (s == 'E')
 			return Relation.BUILDING;
+
+		if (s == TypePiece.PAWN)
+		{
+			return Relation.SELF;
+		}
 
 		return Relation.ENEMY;
 	}
@@ -264,8 +293,7 @@ public class Board : MonoBehaviour
 		
 		fightCell.attackerPiece = null;
 		fightCell.hasFight = false;
-
-		Debug.Log("GAMEOVER "+ gameOver);
+		
 		return gameOver;
 	}
 
