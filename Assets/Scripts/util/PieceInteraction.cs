@@ -54,7 +54,7 @@ public class PieceInteraction : MonoBehaviour
 			c1.piece.stats.visible = false;
 			Game.gameController.moveAndScalePieceCallback(c1.piece, c2.pos, 0.6f, Vector3.zero, delegate
 			{
-				BasePiece newPiece = game.board.createPieceByType(TypePiece.KING_HORSE);
+				BasePiece newPiece = game.board.createPieceFromChar(TypePiece.KING_HORSE);
 				newPiece.stats.attack = c1.piece.stats.attack + c2.piece.stats.attack;
 				newPiece.stats.health = c1.piece.stats.health + c2.piece.stats.health;
 			
@@ -74,8 +74,8 @@ public class PieceInteraction : MonoBehaviour
 		} 
 		else if(type == KING_FROM_HORSE)
 		{
-			BasePiece newPiece2 = game.board.createPieceByType(TypePiece.KING);
-			BasePiece newPiece1 = game.board.createPieceByType(TypePiece.HORSE);
+			BasePiece newPiece2 = game.board.createPieceFromChar(TypePiece.KING);
+			BasePiece newPiece1 = game.board.createPieceFromChar(TypePiece.HORSE);
 
 			int health = c1.piece.stats.health;
 

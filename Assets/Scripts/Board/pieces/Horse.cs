@@ -20,6 +20,7 @@ public class Horse : BasePiece
 		movesAttack = moves;
 
 		type = TypePiece.HORSE;
+		canJump = true;
 		
 		base.Setup (pos);
 		

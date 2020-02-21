@@ -2,8 +2,9 @@
 using System.Collections;
 
 public class TypePiece : MonoBehaviour {
+	public const char NONE = '`'; // not set
+	public const char EMPTY = 'O'; // empty cell
 
-	public const char NONE = '`';
 	public const char KING = 'K';
 	public const char PAWN = 'P';
 	public const char HORSE = 'H';

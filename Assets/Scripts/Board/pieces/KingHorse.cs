@@ -32,6 +32,7 @@ public class KingHorse : BasePiece
 		};
 
 		type = TypePiece.KING_HORSE;
+		canJump = true;
 		
 		base.Setup (pos);
 		

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
@@ -21,9 +22,7 @@ public class Board : MonoBehaviour
 
 	[HideInInspector] public List<BasePiece> myPieces = null;
 	[HideInInspector] public List<BasePiece> enemyPieces = null;
-
-	private Dictionary<char, GameObject> piecesPrefabs;
-
+	
 	private ScalableArrow currentArrow;
 	[HideInInspector] public FightController fight;
 	[HideInInspector] public BotLogic botLogic;
@@ -31,15 +30,7 @@ public class Board : MonoBehaviour
 	public void Setup()
 	{
 		game = GetComponent<Game>() as Game;
-
-		piecesPrefabs = new Dictionary<char, GameObject>();
-		piecesPrefabs.Add(TypePiece.KING, PrefabsList.king);
-		piecesPrefabs.Add(TypePiece.PAWN, PrefabsList.pawn);
-		piecesPrefabs.Add(TypePiece.PAWN_ENEMY, PrefabsList.pawn);
-		piecesPrefabs.Add(TypePiece.BUILDING_HOME, PrefabsList.home);
-		piecesPrefabs.Add(TypePiece.HORSE, PrefabsList.horse);
-		piecesPrefabs.Add(TypePiece.KING_HORSE, PrefabsList.king_horse);
-
+		
 		fight = GetComponent<FightController>();
 		fight.Setup(this);
 
@@ -47,24 +38,7 @@ public class Board : MonoBehaviour
 
 		Game.gameController.onNextActionChanged += onNextActionChanged;
 	}
-
-
-	public void CreateSolid(int w, int h)
-	{
-		for (int i = 0; i < h; i++)
-		{
-			for (var j = 0; j < w; j++)
-			{
-				GameObject obj = Instantiate(cellPrefab, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
-				Cell cell = obj.GetComponent<Cell>();
-				cell.Setup(new Vector2(j, i));
-				cells[i, j] = cell;
-				obj.transform.SetParent(this.transform);
-			}
-		}
-	}
-
-
+	
 	public void CreateByMap(string[] map)
 	{
 		int maxY = map.Length;
@@ -72,7 +46,7 @@ public class Board : MonoBehaviour
 		{
 			for (var j = 0; j < map[i].Length; j++)
 			{
-				if (map[i][j] == '#') continue;
+				if (map[i][j] == TypePiece.NONE) continue;
 				GameObject obj = Instantiate(cellPrefab, gameObject.transform) as GameObject;
 				Cell cell = obj.GetComponent<Cell>();
 
@@ -83,7 +57,7 @@ public class Board : MonoBehaviour
 
 				createPieceFromMap(map[i][j], new Vector2(j, i2));
 
-				if (map[i][j] == 'K')
+				if (map[i][j] == TypePiece.KING)
 				{
 					game.centerCamera(cell.transform.position, false);
 				}
@@ -91,37 +65,67 @@ public class Board : MonoBehaviour
 		}
 	}
 
-	private void createPieceFromMap(char s, Vector2 pos)
+	private void createPieceFromMap(char ch, Vector2 pos)
 	{
-
-		if (!piecesPrefabs.ContainsKey(s))
+		if (ch == TypePiece.EMPTY || ch == TypePiece.NONE)
 			return;
-
-		GameObject prefab = piecesPrefabs[s];
-		GameObject obj = Instantiate(prefab, gameObject.transform, true);
-		BasePiece basePiece = obj.GetComponent<BasePiece>() as BasePiece;
-
-		basePiece.relation = getRelationFromChar(s);
 		
+		BasePiece basePiece = createPieceFromChar(ch);
+		basePiece.pos = pos;
 		
-		basePiece.Setup(pos);
-		basePiece.sprite = getSpriteNameFromChar(s);
 		addPiece(basePiece);
 
 	}
 
-	public BasePiece createPieceByType(char s)
+	public BasePiece createPieceFromChar(char ch)
 	{
-
-		if (!piecesPrefabs.ContainsKey(s))
-			return null;
-
-		GameObject prefab = piecesPrefabs[s];
-		GameObject obj = game.engine.Instance(prefab);
-		BasePiece basePiece = obj.GetComponent<BasePiece>() as BasePiece;
-		basePiece.Setup(new Vector2(0, 0));
+		GameObject prefab = ResourceCache.getPrefab(BasePiece.BASE_PREFAB);
+		GameObject obj = Instantiate(prefab, gameObject.transform, true);
+		BasePiece basePiece = addPieceScriptByChar(obj, ch);
+		basePiece.sprite = getSpriteNameFromChar(ch);
+		basePiece.relation = getRelationFromChar(ch);
+		
+		basePiece.Setup(Vector2.zero);
 
 		return basePiece;
+	}
+
+	private BasePiece addPieceScriptByChar(GameObject obj, char c)
+	{
+		switch (c)
+		{
+			case TypePiece.KING:
+				return obj.AddComponent<King>();
+			
+			case TypePiece.KING_HORSE:
+				return obj.AddComponent<KingHorse>();
+			
+			case TypePiece.PAWN: 
+			case TypePiece.PAWN_ENEMY:
+				return obj.AddComponent<Pawn>();
+			
+			case TypePiece.HORSE: 
+			case TypePiece.HORSE_ENEMY:
+				return obj.AddComponent<Horse>();
+			
+			case TypePiece.BISHOP: 
+			case TypePiece.BISHOP_ENEMY:
+				return obj.AddComponent<Bishop>();
+			
+			case TypePiece.ROOK: 
+			case TypePiece.ROOK_ENEMY:
+				return obj.AddComponent<Rook>();
+			
+			case TypePiece.QUEEN: 
+			case TypePiece.QUEEN_ENEMY:
+				return obj.AddComponent<Queen>();
+			
+						
+			case TypePiece.BUILDING_HOME:
+				return obj.AddComponent<Home>();
+		}
+		
+		return obj.AddComponent<King>();
 	}
 
 	string getSpriteNameFromChar(char c)
@@ -131,6 +135,8 @@ public class Board : MonoBehaviour
 			//self
 			case TypePiece.KING:
 				return BasePiece.KING_WHITE;
+			case TypePiece.KING_HORSE:
+				return BasePiece.KING_HORSE_WHITE;
 			case TypePiece.PAWN:
 				return BasePiece.PAWN_WHITE;
 			case TypePiece.HORSE:
@@ -160,16 +166,25 @@ public class Board : MonoBehaviour
 		return BasePiece.KING_WHITE;
 	}
 	
-	int getRelationFromChar(char s)
+	int getRelationFromChar(char ch)
 	{
-		if (s == 'K' || s == 'H')
+		if (ch == TypePiece.KING || ch == TypePiece.KING_HORSE)
 			return Relation.SELF;
-		if (s == 'E')
-			return Relation.BUILDING;
 
-		if (s == TypePiece.PAWN)
+		switch (ch)
 		{
-			return Relation.SELF;
+			// my pieces
+			case TypePiece.KING:
+			case TypePiece.KING_HORSE:
+			case TypePiece.PAWN:	
+			case TypePiece.HORSE:
+			case TypePiece.BISHOP:
+			case TypePiece.ROOK:
+			case TypePiece.QUEEN:
+				return Relation.SELF;
+			// buildings
+			case TypePiece.BUILDING_HOME:
+				return Relation.BUILDING;
 		}
 
 		return Relation.ENEMY;
@@ -205,7 +220,7 @@ public class Board : MonoBehaviour
 	{
 		if (!currentArrow)
 		{
-			GameObject arrowPrefab = Resources.Load("prefabs/ScalableArrow") as GameObject;
+			GameObject arrowPrefab = ResourceCache.getPrefab("prefabs/ScalableArrow");
 			GameObject arrow = Instantiate(arrowPrefab, new Vector3(0, 0, 0), Quaternion.identity);
 			arrow.transform.SetParent(transform);
 			currentArrow = arrow.GetComponent<ScalableArrow>();
@@ -452,10 +467,17 @@ public class Board : MonoBehaviour
 	public bool canMoveToCellAt(Vector2 pos, BasePiece piece, bool isInteraction = false){
 
 		Cell cell = getCellAt (pos);
+		
+		if (!piece.canJump)
+		{
+			if (!isFreeCellsToMove(piece.pos, pos)) return false;
+		}
 
 		if (!cell.piece)
+		{
 			return true;
-
+		}
+		
 		if (cell.piece.relation == Relation.ENEMY && isInteraction)
 			return false;
 		
@@ -475,6 +497,25 @@ public class Board : MonoBehaviour
 		}
 
 		return false;
+	}
+
+	private bool isFreeCellsToMove(Vector2 startPos, Vector2 endPos)
+	{
+		int xDir = Math.Sign((endPos - startPos).x);
+		int yDir = Math.Sign((endPos - startPos).y);
+		Debug.Log("CHECK ___________________"+ endPos);
+		Vector2 curPos = startPos;
+		for (int i = 0; i < 5; i++)
+		{
+			curPos += new Vector2(xDir, yDir);
+			if (curPos == endPos) break;
+			
+			Cell cell = getCellAt(curPos);
+			if (!cell) return false;
+			if (cell.piece) return false;
+		}
+
+		return true;
 	}
 
 	public Cell getCellAt(Vector2 pos){

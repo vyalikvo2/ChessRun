@@ -4,12 +4,15 @@ using DG.Tweening;
 
 public class BasePiece : MonoBehaviour
 {
+	public const string BASE_PREFAB = "prefabs/BasePiece";
+	
 	private const string PREFIX = "images/pieces/";
 	// pieces
-	public const string PAWN_WHITE = PREFIX+"pawn_white";
-	public const string PAWN_BLACK = PREFIX+"pawn_black";
 	public const string KING_WHITE = PREFIX+"king_white";	
 	public const string KING_BLACK = PREFIX+"king_black";	
+	public const string KING_HORSE_WHITE = PREFIX+"king_horse_white";
+	public const string PAWN_WHITE = PREFIX+"pawn_white";
+	public const string PAWN_BLACK = PREFIX+"pawn_black";
 	public const string HORSE_WHITE = PREFIX+"horse_white";	
 	public const string HORSE_BLACK = PREFIX+"horse_black";	
 	public const string BISHOP_WHITE = PREFIX+"bishop_white";	
@@ -32,6 +35,8 @@ public class BasePiece : MonoBehaviour
 	
 	public int relation = Relation.SELF;
 	public char type	= TypePiece.NONE;
+
+	public bool canJump = false;
 	
 	private Vector2 _pos;
 	public Vector2 pos {
@@ -58,9 +63,13 @@ public class BasePiece : MonoBehaviour
 		get { return _currentSprite; } 
 		set
 		{
-			if (!spriteObj) return;
-			if((spriteObj.GetComponent<SpriteRenderer> () as SpriteRenderer).sprite != value){
-				(spriteObj.GetComponent<SpriteRenderer> () as SpriteRenderer).sprite = value;
+			if (!spriteObj)
+			{
+				if(transform.childCount > 0)
+					spriteObj = transform.GetChild(0).gameObject;
+			}
+			if(spriteObj.GetComponent<SpriteRenderer> ().sprite != value){
+				spriteObj.GetComponent<SpriteRenderer> ().sprite = value;
 				_currentSprite = value;
 			}
 		}
@@ -87,10 +96,11 @@ public class BasePiece : MonoBehaviour
 		}
 	}
 
+	private bool _inited = false;
 	public virtual void Setup(Vector2 pos)
 	{
-		if(transform.childCount > 0)
-			spriteObj = transform.GetChild(0).gameObject;
+		if (_inited) return;
+		_inited = true;
 		
 		setBoardPosition(pos);
 		
