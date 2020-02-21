@@ -84,13 +84,16 @@ public class FightController : MonoBehaviour
         defender.spriteObj.transform.DOLocalMove(defenderPosition, TIME_MOVE_TO_ATTACK);
         
         attacker.transform.DOLocalMove(cell2.transform.localPosition, TIME_MOVE_TO_ATTACK);
-        attacker.spriteObj.transform.DOLocalMove(attackerPosition, TIME_MOVE_TO_ATTACK).OnComplete(animateAtackerAttack);
+        attacker.spriteObj.transform.DOLocalMove(attackerPosition, TIME_MOVE_TO_ATTACK).OnComplete(createFight);
     }
 
-    // defender attack animation
-    public void animateAtackerAttack()
+    private void createFight()
     {
         board.createFightAtCell(cell1, cell2);
+        animateAtackerAttack();
+    }
+    public void animateAtackerAttack()
+    {
         state = FightState.ATTACKER_ATTACK;
         
         attacker.spriteObj.transform.DOLocalMove(Vector3.zero, TIME_ATTACKING).OnComplete(applyAttackerAttack);
@@ -100,7 +103,7 @@ public class FightController : MonoBehaviour
             attacker.spriteObj.transform.DOLocalMove(attackerPosition, TIME_ATTACKING_BACK).SetDelay(TIME_ATTACKING);
             defender.spriteObj.transform.DOLocalMove(defenderPosition + attackedShift, TIME_ATTACKED_SHIFT).SetDelay(TIME_ATTACKING);
             defender.spriteObj.transform.DOLocalMove(defenderPosition, TIME_ATTACKED_BACK_SHIFT).SetDelay(TIME_ATTACKING+TIME_ATTACKED_SHIFT)
-                .OnComplete(animateDefenderAttack);
+                .OnComplete(afterAtack);
         }
         else
         {
@@ -109,27 +112,6 @@ public class FightController : MonoBehaviour
         }
     }
 
-    // defender attack animation
-    private void animateDefenderAttack()
-    {
-        state = FightState.DEFENDER_ATTACK;
-        
-        defender.spriteObj.transform.DOLocalMove(Vector3.zero, TIME_ATTACKING).OnComplete(applyDefenderAttack);
-        
-        if (!isKilling(defender,attacker))
-        {
-            defender.spriteObj.transform.DOLocalMove(defenderPosition, TIME_ATTACKING_BACK).SetDelay(TIME_ATTACKING);
-            attacker.spriteObj.transform.DOLocalMove(attackerPosition - attackedShift, TIME_ATTACKED_SHIFT).SetDelay(TIME_ATTACKING);
-            attacker.spriteObj.transform.DOLocalMove(attackerPosition, TIME_ATTACKED_BACK_SHIFT)
-                .SetDelay(TIME_ATTACKING + TIME_ATTACKED_SHIFT).OnComplete(afterAtack);
-        }
-        else
-        {
-            attacker.spriteObj.transform.DOLocalMove(attackerPosition - deathShift, TIME_DEATH_SHIFT).SetDelay(TIME_ATTACKING);
-            attacker.killedAnimation(-1, TIME_DEATH_SHIFT, onAttackerKilled);
-        }
-    }
-    
     // ally attacks cell to defent teammate
     public void animateAllyHelpDefend(Cell cell1, Cell cell2)
     {
@@ -216,7 +198,8 @@ public class FightController : MonoBehaviour
         {
             attacker.spriteObj.transform.DOLocalMove(attackerPosition, TIME_ATTACKING_BACK).SetDelay(TIME_ATTACKING);
             defender.spriteObj.transform.DOLocalMove(defenderPosition + attackedShift, TIME_ATTACKED_SHIFT).SetDelay(TIME_ATTACKING);
-            defender.spriteObj.transform.DOLocalMove(defenderPosition, TIME_ATTACKED_BACK_SHIFT).SetDelay(TIME_ATTACKING+TIME_ATTACKED_SHIFT).OnComplete(animateDefenderAttack);
+            defender.spriteObj.transform.DOLocalMove(defenderPosition, TIME_ATTACKED_BACK_SHIFT).SetDelay(TIME_ATTACKING+TIME_ATTACKED_SHIFT)
+            .OnComplete(afterAtack);
         }
         else
         {
@@ -245,7 +228,7 @@ public class FightController : MonoBehaviour
             attacker.spriteObj.transform.DOLocalMove(defenderPosition, TIME_ATTACKING_BACK).SetDelay(TIME_ATTACKING);
             defender.spriteObj.transform.DOLocalMove(attackerPosition - attackedShift, TIME_ATTACKED_SHIFT).SetDelay(TIME_ATTACKING);
             defender.spriteObj.transform.DOLocalMove(attackerPosition, TIME_ATTACKED_BACK_SHIFT).SetDelay(TIME_ATTACKING+TIME_ATTACKED_SHIFT)
-                .OnComplete(animateAtackerAttack);
+                .OnComplete(afterAtack);
         }
         else
         {

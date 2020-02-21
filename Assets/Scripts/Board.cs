@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using DG.Tweening;
 
 // New
 public enum CellState
@@ -211,7 +212,7 @@ public class Board : MonoBehaviour
 		cell2.piece = cell1.piece;
 		cell1.piece = null;
 	}
-
+	
 	public void attackPiece(Cell cell1, Cell cell2)
 	{
 		fight.beginAttack(cell1, cell2);

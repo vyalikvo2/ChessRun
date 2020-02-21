@@ -8,7 +8,8 @@ class BotMove
     public const int MOVE_DEFEND_ATTACK = 1;
     public const int MOVE_ATTACK = 2;
     public const int MOVE_ATTACK_HELP = 3;
-    
+    public const int FIGHT_CELL_CONTINUE = 4;
+        
     public Cell cellFrom;
     public Cell cellTo;
     public int type = MOVE;
@@ -27,7 +28,9 @@ public class BotLogic : MonoBehaviour
     private Board board;
 
     private Game game;
-    // Start is called before the first frame update
+    
+    private List<BotMove> moveList = new List<BotMove>();
+                                                     
     void Start()
     {
         board = GetComponent<Board>();
@@ -36,7 +39,7 @@ public class BotLogic : MonoBehaviour
 
     public void makeBotMove()
     {
-        List<BotMove> moveList = new List<BotMove>();
+        moveList.Clear();
         
         for (int i = 0; i < Board.H; i++)
         {
@@ -45,9 +48,15 @@ public class BotLogic : MonoBehaviour
                 Cell cell = board.cells[i, j];
                 if (!cell) continue;
                 if (!cell.piece) continue;
-                if (cell.piece.relation != Relation.ENEMY) continue;
-
+                
                 BasePiece piece = cell.piece;
+
+                if (cell.hasFight)
+                {
+                    Debug.Log("addFightMove");
+                    BotMove cellFightMove = new BotMove(cell, null, BotMove.FIGHT_CELL_CONTINUE, 2);
+                    moveList.Add(cellFightMove);
+                }
 
                 for (int k = 0; k < piece.movesAttack.Count; k++)
                 {
@@ -73,7 +82,7 @@ public class BotLogic : MonoBehaviour
                         }
                         
                     }
-                    else if(attackCell.piece && attackCell.piece.relation == Relation.SELF)
+                    else if(cell.piece.relation == Relation.ENEMY && attackCell.piece && attackCell.piece.relation == Relation.SELF)
                     {
                         int score = 3;
                         if (attackCell.piece.type == TypePiece.KING || attackCell.piece.type == TypePiece.KING_HORSE)
@@ -123,6 +132,18 @@ public class BotLogic : MonoBehaviour
         {
             Debug.Log(move.cellFrom.pos+ " -> "+move.cellTo.pos);
             board.fight.beginAttack(move.cellFrom, move.cellTo);
+        } else if (move.type == BotMove.FIGHT_CELL_CONTINUE)
+        {
+            Debug.Log(move.cellFrom.pos+ " continue fight");
+            if (move.cellFrom.piece.relation == Relation.ENEMY)
+            {
+                 board.fight.animateFightCellDefenderAttack(move.cellFrom); 
+            }
+            else
+            {
+                board.fight.animateFightCellAttackerAttack(move.cellFrom); 
+            }
+           
         }
         
     }

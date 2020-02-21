@@ -47,7 +47,7 @@ public class GameController : MonoBehaviour
 	public void levelComplete()
 	{
 		state = GameState.LEVEL_COMPLETE;
-		game.nextLevel ();
+		game.gameUI.setMenu(GameUI.MENU_LEVEL_COMPLETE);
 	}
 
 
@@ -115,7 +115,9 @@ public class GameController : MonoBehaviour
 		switch (action.name)
 		{
 			case GameAction.END_LEVEL:
-				levelComplete();
+				action.cellFrom.piece.stats.visible = false;
+				action.cellFrom.piece.zIndex = ZIndex.FIGHT_UI;
+				moveAndScalePieceCallback(action.cellFrom.piece, action.cellTo.pos, 0.4f, new Vector3(0,-0.25f,0), levelComplete);
 				break;
 			case GameAction.MOVE:
 				if (action.cellTo)
@@ -160,7 +162,20 @@ public class GameController : MonoBehaviour
 			endMove();
 		}
 	}
-
+	
+	
+	public void movePieceCallback(BasePiece piece, Vector2 pos, TweenCallback callback = null)
+	{
+		changeState(GameState.ANIMATING_MOVE);
+		piece.transform.DOLocalMove(game.board.getLocal3Position(pos), 0.6f).OnComplete(callback);
+	}
+	
+	public void moveAndScalePieceCallback(BasePiece piece, Vector2 pos, float scale, Vector3 offset = new Vector3(), TweenCallback callback = null)
+	{
+		changeState(GameState.ANIMATING_MOVE);
+		piece.transform.DOScale(scale, 0.6f);
+		piece.transform.DOLocalMove(game.board.getLocal3Position(pos) + offset, 0.6f).OnComplete(callback);
+	}
 
 	public void beginBotMove()
 	{
@@ -199,8 +214,7 @@ public class GameController : MonoBehaviour
 
 	private void gameOver()
 	{
-		game.gameInput.setUIInput(true);
-		game.gameUI.setMenuVisible(true);
+		game.gameUI.setMenu(GameUI.MENU_REPLAY);
 		changeState(GameState.GAMEOVER);
 	}
 }

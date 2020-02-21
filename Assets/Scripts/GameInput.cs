@@ -57,7 +57,7 @@ public class GameInput : MonoBehaviour
                     Game.gameController.onPlayerBeginDragBoard (cell);
                 }
             }
-            else if (cell.hasFight)
+            else if (cell && cell.hasFight)
             {
                 state = STATE_FIGHT_CELL;
                 currentCell = cell;

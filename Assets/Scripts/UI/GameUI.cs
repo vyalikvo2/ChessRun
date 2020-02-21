@@ -1,39 +1,80 @@
-﻿using UnityEngine;
+﻿using Assets.Scripts.UI;
+using UnityEngine;
 using UnityEngine.UI;
 
 
-public class GameUI : MonoBehaviour {
+public class GameUI : MonoBehaviour
+{
+	public const int MENU_NONE = 0;
+	public const int MENU_REPLAY = 1;
+	public const int MENU_LEVEL_COMPLETE = 2;
 	
 	[SerializeField] public GameObject levelText;
 	[SerializeField] public GameObject menuContainer;
-	
-	[SerializeField] public GameObject gameOverText;
-	[SerializeField] public GameObject replayButton;
-	[SerializeField] public GameObject replayButtonText;
-	
-	[HideInInspector] private Game game;
-	
-	private bool _visible = true;
 
-	void Start()
+	[HideInInspector] public Game game;
+
+	[SerializeField] public GameObject replayMenuObj;
+	[HideInInspector] public ReplayMenu replayMenu;
+	
+	[SerializeField] public GameObject levelCompleteMenuObj;
+	[HideInInspector] public LevelCompleteMenu levelCompleteMenu;
+
+	[HideInInspector] private int currentMenu = MENU_NONE;
+	[HideInInspector] private bool _menuVisible = true;
+
+	[HideInInspector] private bool _inited = false;
+	void init()
 	{
 		game = GetComponent<Game>();
+		replayMenu = replayMenuObj.GetComponent<ReplayMenu>();
+		replayMenu.gameUI = this;
+		
+		levelCompleteMenu = levelCompleteMenuObj.GetComponent<LevelCompleteMenu>();
+		levelCompleteMenu.gameUI = this;
+		
+		_inited = true;
 	}
-	
-	public void setMenuVisible(bool visible)
+	public void setMenu(int menuId)
 	{
-		_visible = visible;
-		menuContainer.GetComponent<Image>().enabled = visible;
-		replayButton.GetComponent<Image>().enabled = visible;
-		replayButton.GetComponent<Button>().enabled = visible;
-		replayButtonText.GetComponent<Text>().enabled = visible;
-		gameOverText.GetComponent<Text>().enabled = visible;
+		if (!_inited) init();
+		switch (menuId)
+		{
+			case MENU_REPLAY:
+				replayMenu.setVisible(true);
+				break;
+			
+			case MENU_LEVEL_COMPLETE:
+				levelCompleteMenu.setVisible(true);
+				break;
+		}
+
+		if (menuId != MENU_NONE)
+		{
+			game.gameInput.setUIInput(true);
+			setMenuVisible(true);
+		} 
+		else 
+		{
+			game.gameInput.setUIInput(false);
+			hideAllMenu();
+			setMenuVisible(false);
+		}
+		
+		currentMenu = menuId;
 	}
 
-	public void btn_replayLevel()
+	private void hideAllMenu()
 	{
-		game.gameInput.setUIInput(false);
-		setMenuVisible(false);
-		game.replayLevel();
+		replayMenu.setVisible(false);
+		levelCompleteMenu.setVisible(false);
 	}
+	
+	
+	private void setMenuVisible(bool visible)
+	{
+		_menuVisible = visible;
+		menuContainer.GetComponent<Image>().enabled = visible;
+	}
+
 }

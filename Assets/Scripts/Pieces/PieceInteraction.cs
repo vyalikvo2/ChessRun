@@ -50,21 +50,27 @@ public class PieceInteraction : MonoBehaviour
 		Debug.Log("interaction "+type);
 		if(type == KING_TO_HORSE)
 		{
-			BasePiece newPiece = game.board.createPieceByType(TypePiece.KING_HORSE);
-			newPiece.stats.attack = c1.piece.stats.attack + c2.piece.stats.attack;
-			newPiece.stats.health = c1.piece.stats.health + c2.piece.stats.health;
+			c1.piece.zIndex = ZIndex.UI_ANIMATING_PIECE_MOVE;
+			c1.piece.stats.visible = false;
+			Game.gameController.moveAndScalePieceCallback(c1.piece, c2.pos, 0.6f, Vector3.zero, delegate
+			{
+				BasePiece newPiece = game.board.createPieceByType(TypePiece.KING_HORSE);
+				newPiece.stats.attack = c1.piece.stats.attack + c2.piece.stats.attack;
+				newPiece.stats.health = c1.piece.stats.health + c2.piece.stats.health;
 			
-			destroyPiece(c1.piece);
-			destroyPiece(c2.piece);
-			c1.piece = null;
-			c2.piece = null;
+				destroyPiece(c1.piece);
+				destroyPiece(c2.piece);
+				c1.piece = null;
+				c2.piece = null;
 
-			newPiece.setBoardPosition(c2.pos);
-			c2.piece = newPiece;
+				newPiece.setBoardPosition(c2.pos);
+				c2.piece = newPiece;
 			
-			newPiece.relation = Relation.SELF;
+				newPiece.relation = Relation.SELF;
 
-			Game.gameController.momentInteractionComplete();
+				Game.gameController.momentInteractionComplete();
+
+			});
 		} 
 		else if(type == KING_FROM_HORSE)
 		{

@@ -4,6 +4,28 @@ using DG.Tweening;
 
 public class BasePiece : MonoBehaviour
 {
+	private static string PREFIX = "images/pieces/";
+	public static string PAWN_WHITE = PREFIX+"pawn_white";
+	public static string PAWN_BLACK = PREFIX+"pawn_black";
+	public static string KING_WHITE = PREFIX+"king_white";	
+	public static string KING_BLACK = PREFIX+"king_black";	
+	public static string HORSE_WHITE = PREFIX+"horse_white";	
+	public static string HORSE_BLACK = PREFIX+"horse_black";	
+	public static string BISHOP_WHITE = PREFIX+"bishop_white";	
+	public static string BISHOP_BLACK = PREFIX+"bishop_black";	
+	public static string QUEEN_WHITE = PREFIX+"queen_white";	
+	public static string QUEEN_BLACK = PREFIX+"queen_black";	
+	public static string ROOK_WHITE = PREFIX+"rook_white";	
+	public static string ROOK_BLACK = PREFIX+"rook_black";	
+	
+	private static string CELL_PREFIX = "images/board/";
+	public static string H_CELL_ENEMY = CELL_PREFIX+"cell_enemy";	
+	public static string H_CELL_HIGHLIGHTED = CELL_PREFIX+"cell_highlighted";
+	public static string H_CELL_MOVE_TO = CELL_PREFIX+"cell_moveto";
+	public static string H_CELL_BLACK = CELL_PREFIX+"cell_bg_black";	
+	public static string H_CELL_WHITE = CELL_PREFIX+"cell_bg_white";	
+	public static string H_CELL_CURRENT = CELL_PREFIX+"cell_curposition";
+	
 	public int relation = Relation.SELF;
 	public char type	= TypePiece.NONE;
 	
@@ -13,6 +35,16 @@ public class BasePiece : MonoBehaviour
 		set { _pos = value; RefreshPos();}
 	}
 
+	private string _sprite;
+
+	public string sprite
+	{
+		get { return _sprite; }
+		set
+		{
+			//if(_)
+		}
+	}
 	public GameObject spriteObj;
 	private Sprite _currentSprite;
 	[HideInInspector] public Sprite currentSprite { 

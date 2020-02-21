@@ -37,6 +37,12 @@ public class Game : MonoBehaviour {
 		levels.Add (new string[]
 		{
 			"E",
+			"K"
+		});
+
+		levels.Add (new string[]
+		{
+			"E",
 			"O",
 			"1",
 			"K"
@@ -89,7 +95,7 @@ public class Game : MonoBehaviour {
 		GameData.choosedLevel = 2;
 		setLevel(GameData.choosedLevel);	
 		
-		gameUI.setMenuVisible(false);
+		gameUI.setMenu(GameUI.MENU_NONE);
 	}
 
 
@@ -104,6 +110,11 @@ public class Game : MonoBehaviour {
 		gameController.startLevel();
 
 		gameUI.levelText.GetComponent<Text>().text = "Уровень: "+ (currentLevel+1);
+	}
+
+	public int getCurrentLevel()
+	{
+		return currentLevel;
 	}
 
 	public void replayLevel()
