@@ -120,6 +120,10 @@ public class BasePiece : MonoBehaviour
 		transform.localPosition = new Vector3(pos.x * Game.POS_TO_COORDS, pos.y * Game.POS_TO_COORDS, 0);
 	}
 
+	public bool hasKing()
+	{
+		return type == TypePiece.KING || type == TypePiece.KING_HORSE;
+	}
 	public virtual void setBoardPosition(Vector2 pos)
 	{
 		this.pos = pos;

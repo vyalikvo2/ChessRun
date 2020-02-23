@@ -37,11 +37,8 @@ public class Game : MonoBehaviour {
 		levels.Add (new string[]
 		{
 			"E",
-			"OOOOOOOO",
-			"OOOOOOOOO",
-			"OOOBOOOOO",
-			"OOOOOOOOO",
-			"OOOOOOOO",
+			"1O1O1O1OO",
+			"POOPPPPO",
 			"KRBQ"
 		});
 

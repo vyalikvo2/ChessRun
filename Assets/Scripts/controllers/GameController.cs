@@ -145,9 +145,13 @@ public class GameController : MonoBehaviour
 				break;
 		}
 
-		if (action.name != GameAction.END_LEVEL && action.cellTo )
+		if (action.name != GameAction.END_LEVEL && action.cellTo)
 		{
-			game.centerCamera(action.cellTo.transform.position);
+			Debug.Log("cellto type: " + action.cellTo.piece.type);
+			
+			if(action.cellTo.piece.hasKing() || action.cellFrom.piece.hasKing() || (action.cellTo.hasFight && action.cellTo.attackerPiece.hasKing()))
+				game.centerCamera(action.cellTo.transform.position);
+			
 		}
 	}
 

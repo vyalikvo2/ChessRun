@@ -89,6 +89,19 @@ public class Board : MonoBehaviour
 
 		return basePiece;
 	}
+	
+	
+	public HighlightPiece createHighLight(Vector2 pos)
+	{
+		GameObject prefab = ResourceCache.getPrefab(BasePiece.BASE_PREFAB);
+		GameObject obj = Instantiate(prefab, gameObject.transform, true);
+		HighlightPiece hightlightPiece = obj.AddComponent<HighlightPiece>();
+		hightlightPiece.Setup(pos);
+
+		hightlightPiece.sprite = BasePiece.H_CELL_HIGHLIGHTED;
+	
+		return hightlightPiece;
+	}
 
 	private BasePiece addPieceScriptByChar(GameObject obj, char c)
 	{
@@ -300,7 +313,7 @@ public class Board : MonoBehaviour
 		} 
 		else if (fightStatus == FightController.KILLED_ATTACKER)
 		{
-			if (fightCell.attackerPiece.relation == Relation.SELF && (fightCell.piece.type == TypePiece.KING || fightCell.piece.type == TypePiece.KING_HORSE)) // check gameover
+			if (fightCell.attackerPiece.relation == Relation.SELF && (fightCell.attackerPiece.type == TypePiece.KING || fightCell.attackerPiece.type == TypePiece.KING_HORSE)) // check gameover
 				gameOver = true;
 			
 			destroyPiece (fightCell.attackerPiece);
@@ -328,9 +341,17 @@ public class Board : MonoBehaviour
 
 	public void highlightMoves(BasePiece piece)
 	{
-		for (int i=0; i<piece.moves.Count; i++) {
+		for (int i=0; i < piece.moves.Count; i++) {
 			Vector2 p = piece.pos+piece.moves[i];
-			if (p.x < 0 || p.y < 0 || !getCellAt(p) || !canMoveToCellAt(p, piece) ) continue;
+			
+			if (p.x < 0 || p.y < 0) continue;
+			if (!canMoveToCellAt(p, piece)) continue;
+			
+			Cell cell = getCellAt(p);
+			
+			if(!cell) continue;
+			if (cell.piece && !cell.piece.isInteractableWith(piece) && cell.piece.type != TypePiece.BUILDING_HOME) continue; // can move only to empty cell or home
+			
 			createHighLightAt(p, piece.pos);
 		}
 
@@ -342,26 +363,48 @@ public class Board : MonoBehaviour
 				createHighLightAt(p, piece.pos);
 			}
 		}
+		
+		if (piece.movesAttack != null)
+		{
+			for (int i=0; i<piece.movesAttack.Count; i++) 
+			{
+				Vector2 p = piece.pos + piece.movesAttack[i];
+				
+				if (p.x < 0 || p.y < 0) continue;
+				if (!canMoveToCellAt(p, piece)) continue;
+			
+				Cell cell = getCellAt(p);
+			
+				if(!cell) continue;
+
+				BasePiece pieceTo = cell.piece;
+				if (!pieceTo) continue; // can attack to not empty cell
+				if (pieceTo.relation != Relation.ENEMY && !cell.hasFight) continue; // can attack only enemy or fightcell
+
+				createHighLightAt(p, piece.pos);
+			}
+		}
 	
 		createHighLightAt(piece.pos, piece.pos, true);
 	}
 
 	private void createHighLightAt(Vector2 pos, Vector2 posFrom, bool isCurrentPos = false)
 	{
-		GameObject highlight = game.engine.Instance (PrefabsList.cell_highlighted);
-		HighlightPiece component = highlight.GetComponent<HighlightPiece> () as HighlightPiece;
-		component.Setup(pos);
+		Debug.Log("CRETE AT " + pos);
+
+		HighlightPiece component = createHighLight(pos);
 		
-		component.zIndex = ZIndex.PIECES_HIGHLIGHT;
-
-		component.animateScale(0, 1.0f);
-		component.setBoardPosition(posFrom);
 		component.pos = pos;
-
+		component.zIndex = ZIndex.PIECES_HIGHLIGHT;
+		component.animateScale(0, 1.0f);
+		
 		if (!isCurrentPos) {
+			component.sprite = BasePiece.H_CELL_HIGHLIGHTED;
 			piecesHighlighted.Add (component);
-		} else {
-			component.currentSprite = component.cell_current;
+		} 
+		else
+		{
+			component.sprite = BasePiece.H_CELL_CURRENT;
 			currentPosPieceHighligh = component;
 		}
 	}
@@ -416,25 +459,25 @@ public class Board : MonoBehaviour
 					{
 						if (nextCell.piece.relation == Relation.ENEMY && nextCell.attackerPiece.relation == Relation.SELF)
 						{
-							pieceComponent.currentSprite = pieceComponent.cell_attack;
+							pieceComponent.sprite = BasePiece.H_CELL_ENEMY;
 							Game.gameController.updateNextActionCell(nextCell, GameAction.ATTACK_HELP);
 						}
 						else if (nextCell.piece.relation == Relation.SELF && nextCell.attackerPiece.relation == Relation.ENEMY)
 						{
-							pieceComponent.currentSprite = pieceComponent.cell_attack;
+							pieceComponent.sprite = BasePiece.H_CELL_ENEMY;
 							Game.gameController.updateNextActionCell(nextCell, GameAction.DEFEND_HELP);
 						}
 						
 					}
 					else if(nextCell.piece.relation == Relation.ENEMY)
 					{
-						pieceComponent.currentSprite = pieceComponent.cell_attack;
+						pieceComponent.sprite = BasePiece.H_CELL_ENEMY;
 						Game.gameController.updateNextActionCell(nextCell, GameAction.ATTACK);
 					}
 				} 
 				else
 				{
-					pieceComponent.currentSprite = pieceComponent.cell_next;
+					pieceComponent.sprite = BasePiece.H_CELL_MOVE_TO;
 					string interactionType = PieceInteraction.getType(prevCell, nextCell);
 					
 					if (interactionType == PieceInteraction.NONE)
@@ -452,8 +495,10 @@ public class Board : MonoBehaviour
 					
 				}
 				
-			} else {
-				pieceComponent.currentSprite = pieceComponent.cell_highlighted;
+			} 
+			else 
+			{
+				pieceComponent.sprite = BasePiece.H_CELL_HIGHLIGHTED;
 			}
 		}
 
@@ -467,6 +512,8 @@ public class Board : MonoBehaviour
 	public bool canMoveToCellAt(Vector2 pos, BasePiece piece, bool isInteraction = false){
 
 		Cell cell = getCellAt (pos);
+		
+		if(!cell) return false;
 		
 		if (!piece.canJump)
 		{
@@ -499,11 +546,11 @@ public class Board : MonoBehaviour
 		return false;
 	}
 
-	private bool isFreeCellsToMove(Vector2 startPos, Vector2 endPos)
+	public bool isFreeCellsToMove(Vector2 startPos, Vector2 endPos)
 	{
 		int xDir = Math.Sign((endPos - startPos).x);
 		int yDir = Math.Sign((endPos - startPos).y);
-		Debug.Log("CHECK ___________________"+ endPos);
+
 		Vector2 curPos = startPos;
 		for (int i = 0; i < 5; i++)
 		{

@@ -50,12 +50,15 @@ public class BotLogic : MonoBehaviour
                 if (!cell.piece) continue;
                 
                 BasePiece piece = cell.piece;
+                if (piece.relation != Relation.ENEMY && !cell.hasFight) continue;
 
                 if (cell.hasFight)
                 {
                     Debug.Log("addFightMove");
                     BotMove cellFightMove = new BotMove(cell, null, BotMove.FIGHT_CELL_CONTINUE, 2);
                     moveList.Add(cellFightMove);
+                    
+                    continue; // bot at fight cell cant make other moves
                 }
 
                 for (int k = 0; k < piece.movesAttack.Count; k++)
@@ -65,6 +68,11 @@ public class BotLogic : MonoBehaviour
                     Vector2 attackPos = piece.pos + attackDir;
                     if (attackPos.x < 0 || attackPos.y < 0 || attackPos.x >= Board.W || attackPos.y > Board.H) continue;
                     Cell attackCell = board.getCellAt(attackPos);
+
+                    if (!cell.piece.canJump)
+                    {
+                        if(!game.board.isFreeCellsToMove(cell.pos,attackPos)) continue;
+                    }
                     
                     if (!attackCell) continue;
                     
