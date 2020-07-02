@@ -37,9 +37,9 @@ public class Game : MonoBehaviour {
 		levels.Add (new string[]
 		{
 			"E",
-			"1O1O1O1OO",
-			"POOPPPPO",
-			"KRBQ"
+			"O",
+			"O",
+			"K"
 		});
 
 		levels.Add (new string[]
@@ -50,33 +50,21 @@ public class Game : MonoBehaviour {
 			"K"
 		});
 
-		levels.Add (new string[] {"EO", 
-			                            "1O1",
-			                            "O1O",
-			                            "OKO"});
-		
-		levels.Add (new string[] {"##E", 
-										"##O", 
-										"##O", 
-			                            "111",
-			                            "1111",
-			                            "1111",
-			                            "1111",
-			                            "1111",
-			                            "1111",
-			                            "OOOO",
-			                            "KH"
+		levels.Add (new string[] 
+		{
+			"EO", 
+			"1O",
+			"O1",
+			"OK"
 		});
 		
-		levels.Add (new string[] {"##OOOOOO#",
-			"O#EO#####", 
-			"K#######O",
-			"H#####O#O",
-			"O#O#####O",
-			"####OOH"
+		levels.Add (new string[] 
+		{
+			"E", 
+			"22",
+			"OOOOO1",
+			"HK"
 		});
-
-
 	}
 
 	// Use this for initialization
@@ -94,7 +82,7 @@ public class Game : MonoBehaviour {
 		setupLevels ();
 		board.Setup ();
 		
-		GameData.choosedLevel = 0;
+		GameData.choosedLevel = 3;
 		setLevel(GameData.choosedLevel);	
 		
 		gameUI.setMenu(GameUI.MENU_NONE);

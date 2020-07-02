@@ -20,9 +20,6 @@ public class Board : MonoBehaviour
 	List<HighlightPiece> piecesHighlighted = new List<HighlightPiece>();
 	HighlightPiece currentPosPieceHighligh;
 
-	[HideInInspector] public List<BasePiece> myPieces = null;
-	[HideInInspector] public List<BasePiece> enemyPieces = null;
-	
 	private ScalableArrow currentArrow;
 	[HideInInspector] public FightController fight;
 	[HideInInspector] public BotLogic botLogic;
@@ -577,17 +574,28 @@ public class Board : MonoBehaviour
 		}
 	}
 
+	private void removePiecesAtCell(Cell cell)
+	{
+		if (cell.piece)
+		{
+			cell.piece.Destructor();
+			Destroy(cell.piece.gameObject);
+		}
+		if (cell.attackerPiece)
+		{
+			cell.attackerPiece.Destructor();
+			Destroy(cell.attackerPiece.gameObject);
+		}
+	}
+	
 	public void clearBoard()
 	{
 		removeHighlightMoves ();
-		removePieces (myPieces);
-		removePieces (enemyPieces);
-		myPieces = new List<BasePiece> ();
-		enemyPieces = new List<BasePiece> ();
 
 		for (int i=0; i<H; i++) {
 			for (int j=0; j<W; j++) {
 				if(cells[i,j]){
+					removePiecesAtCell(cells[i,j]);
 					cells[i,j].Destructor();
 					cells[i,j].gameObject.transform.SetParent(null);
 					Destroy(cells[i,j].gameObject);

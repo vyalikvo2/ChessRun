@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="C:\UNITY\ChessRun" t="IncludeRecursive">
+      <e p="Assembly-CSharp-firstpass.csproj" t="IncludeRecursive" />
+      <e p="Assembly-CSharp.csproj" t="IncludeRecursive" />
+      <e p="Assets" t="Include">
+        <e p="DOTween" t="Include">
+          <e p="Modules" t="Include">
+            <e p="DOTweenModuleAudio.cs" t="Include" />
+            <e p="DOTweenModulePhysics.cs" t="Include" />
+            <e p="DOTweenModulePhysics2D.cs" t="Include" />
+            <e p="DOTweenModuleSprite.cs" t="Include" />
+            <e p="DOTweenModuleUI.cs" t="Include" />
+            <e p="DOTweenModuleUnityVersion.cs" t="Include" />
+            <e p="DOTweenModuleUtils.cs" t="Include" />
+          </e>
+          <e p="readme.txt" t="Include" />
+        </e>
+        <e p="Graphics" t="Include">
+          <e p="svg" t="Include">
+            <e p="elements" t="Include">
+              <e p="ScalableArrow.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="Plugins" t="Include">
+          <e p="Pixelplacement" t="Include">
+            <e p="iTween" t="Include">
+              <e p="iTween.cs" t="Include" />
+              <e p="ReadMe!" t="Include">
+                <e p="ReadMe!.txt" t="Include" />
+              </e>
+              <e p="Sample" t="Include">
+                <e p="MoveSample.cs" t="Include" />
+                <e p="RotateSample.cs" t="Include" />
+                <e p="SampleInfo.cs" t="Include" />
+              </e>
+            </e>
+          </e>
+        </e>
+        <e p="Scripts" t="Include">
+          <e p="Board" t="Include">
+            <e p="Board.cs" t="Include" />
+            <e p="Cell.cs" t="Include" />
+            <e p="Pieces" t="Include">
+              <e p="BasePiece.cs" t="Include" />
+              <e p="Bishop.cs" t="Include" />
+              <e p="highlight" t="Include">
+                <e p="HighlightPiece.cs" t="Include" />
+              </e>
+              <e p="Home.cs" t="Include" />
+              <e p="Horse.cs" t="Include" />
+              <e p="King.cs" t="Include" />
+              <e p="KingHorse.cs" t="Include" />
+              <e p="Pawn.cs" t="Include" />
+              <e p="Queen.cs" t="Include" />
+              <e p="Rook.cs" t="Include" />
+              <e p="TypePiece.cs" t="Include" />
+            </e>
+          </e>
+          <e p="BotLogic.cs" t="Include" />
+          <e p="controllers" t="Include">
+            <e p="data" t="Include">
+              <e p="FightActionIcon.cs" t="Include" />
+              <e p="GameAction.cs" t="Include" />
+            </e>
+            <e p="EventController.cs" t="Include" />
+            <e p="FightController.cs" t="Include" />
+            <e p="GameController.cs" t="Include" />
+          </e>
+          <e p="data" t="Include">
+            <e p="GameState.cs" t="Include" />
+            <e p="InteractiveMove.cs" t="Include" />
+            <e p="Relation.cs" t="Include" />
+          </e>
+          <e p="Engine.cs" t="Include" />
+          <e p="Game.cs" t="Include" />
+          <e p="GameData.cs" t="Include" />
+          <e p="GameInput.cs" t="Include" />
+          <e p="PrefabsList.cs" t="Include" />
+          <e p="ResourceCache.cs" t="Include" />
+          <e p="UI" t="Include">
+            <e p="FightUI.cs" t="Include" />
+            <e p="GameUI.cs" t="Include" />
+            <e p="icons" t="Include">
+              <e p="InteractionIcon.cs" t="Include" />
+            </e>
+            <e p="menu" t="Include">
+              <e p="game_menu" t="Include">
+                <e p="BaseGameMenu.cs" t="Include" />
+                <e p="LevelCompleteMenu.cs" t="Include" />
+                <e p="ReplayMenu.cs" t="Include" />
+              </e>
+              <e p="main_menu" t="Include">
+                <e p="ChooseLevelButton.cs" t="Include" />
+                <e p="LevelsContainer.cs" t="Include" />
+                <e p="MainMenu.cs" t="Include" />
+              </e>
+            </e>
+            <e p="PieceStats.cs" t="Include" />
+          </e>
+          <e p="util" t="Include">
+            <e p="PieceInteraction.cs" t="Include" />
+            <e p="Prefabs.cs" t="Include" />
+          </e>
+          <e p="ZIndex.cs" t="Include" />
+        </e>
+      </e>
+      <e p="ChessRun.sln" t="IncludeFlat" />
+      <e p="obj" t="ExcludeRecursive" />
+      <e p="Packages" t="ExcludeRecursive" />
+      <e p="Temp\bin" t="ExcludeRecursive" />
+    </e>
+    <e p="C:\Users\TheDogRex\.Rider2019.3\system\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\TheDogRex\.Rider2019.3\system\resharper-host\local\Transient\ReSharperHost\v193\SolutionCaches\_ChessRun.-283479414.00" t="ExcludeRecursive" />
+  </component>
+</project>
