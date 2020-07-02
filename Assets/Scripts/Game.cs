@@ -1,135 +1,141 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 
-public class Game : MonoBehaviour {
+using ChessRun.GInput;
+using ChessRun.Board;
+using ChessRun.Board.Controllers;
 
-	public static float TO_UNITS = 0.01f;
-	public static float TO_PIXELS = 1/TO_UNITS;
-	public static float CELL_SIZE = 150;
-	public static float POS_TO_COORDS = TO_UNITS * CELL_SIZE;
-	public static float COORDS_TO_POS = 1/(POS_TO_COORDS);
+using ChessRun.GUI;
 
-	public Camera camera;
-
-	[HideInInspector] public Engine engine;
-	public static GameController gameController;
-	
-	[HideInInspector] public GameInput gameInput;
-
-
-	[HideInInspector] public Board board;
-
-	[SerializeField] public GameUI gameUI;
-	[HideInInspector] public FightUI fightUI;
-	
-	private Vector3 cameraLerp;
-
-
-	List <string[]> levels = new List<string[]>();
-
-	private int currentLevel = 0;
-
-
-	private void setupLevels()
+namespace ChessRun
+{
+	public class Game : MonoBehaviour
 	{
-		levels.Add (new string[]
+
+		public static float TO_UNITS = 0.01f;
+		public static float TO_PIXELS = 1 / TO_UNITS;
+		public static float CELL_SIZE = 150;
+		public static float POS_TO_COORDS = TO_UNITS * CELL_SIZE;
+		public static float COORDS_TO_POS = 1 / (POS_TO_COORDS);
+
+		public Camera camera;
+
+		public static GameController gameController;
+
+		[SerializeField] public GameUI gameUI;
+
+		[HideInInspector] public GameInput gameInput;
+		[HideInInspector] public ChessBoard board;
+		[HideInInspector] public FightUI fightUI;
+
+		private Vector3 _cameraLerp;
+
+		private List<string[]> _levels = new List<string[]>();
+
+		private int _currentLevel = 0;
+
+
+		private void setupLevels()
 		{
-			"E",
-			"O",
-			"O",
-			"K"
-		});
+			_levels.Add(new string[]
+			{
+				"E",
+				"O",
+				"O",
+				"K"
+			});
 
-		levels.Add (new string[]
+			_levels.Add(new string[]
+			{
+				"E",
+				"O",
+				"1",
+				"K"
+			});
+
+			_levels.Add(new string[]
+			{
+				"EO",
+				"1O",
+				"O1",
+				"OK"
+			});
+
+			_levels.Add(new string[]
+			{
+				"E",
+				"22",
+				"OOOOO1",
+				"HK"
+			});
+		}
+
+		void Start()
 		{
-			"E",
-			"O",
-			"1",
-			"K"
-		});
+			board = GetComponent<ChessBoard>();
+			fightUI = GetComponent<FightUI>();
+			gameController = GetComponent<GameController>();
+			gameInput = GetComponent<GameInput>();
+			gameUI = GetComponent<GameUI>();
 
-		levels.Add (new string[] 
+			PieceInteraction.game = this;
+
+			setupLevels();
+			board.Setup();
+
+			GameData.choosedLevel = 3;
+			setLevel(GameData.choosedLevel);
+
+			gameUI.setMenu(MenuType.NONE);
+		}
+
+
+		public void setLevel(int level)
 		{
-			"EO", 
-			"1O",
-			"O1",
-			"OK"
-		});
-		
-		levels.Add (new string[] 
+			board.clearBoard();
+
+			_currentLevel = level;
+
+			Debug.Log("Setup level " + _currentLevel);
+			board.CreateByMap(_levels[_currentLevel]);
+			gameController.startLevel();
+
+			gameUI.levelText.GetComponent<Text>().text = "Уровень: " + (_currentLevel + 1);
+		}
+
+		public int getCurrentLevel()
 		{
-			"E", 
-			"22",
-			"OOOOO1",
-			"HK"
-		});
-	}
+			return _currentLevel;
+		}
 
-	// Use this for initialization
-	void Start () {
-
-		engine = GetComponent<Engine> ();
-		board = GetComponent<Board>();
-		fightUI = GetComponent<FightUI>();
-		gameController = GetComponent<GameController>();
-		gameInput = GetComponent<GameInput>();
-		gameUI = GetComponent<GameUI>();
-
-		PieceInteraction.game = this;
-
-		setupLevels ();
-		board.Setup ();
-		
-		GameData.choosedLevel = 3;
-		setLevel(GameData.choosedLevel);	
-		
-		gameUI.setMenu(GameUI.MENU_NONE);
-	}
-
-
-	public void setLevel(int level)
-	{
-		board.clearBoard();
-		
-		currentLevel = level;	
-
-		Debug.Log ("Setup level "+currentLevel);
-		board.CreateByMap (levels [currentLevel]);
-		gameController.startLevel();
-
-		gameUI.levelText.GetComponent<Text>().text = "Уровень: "+ (currentLevel+1);
-	}
-
-	public int getCurrentLevel()
-	{
-		return currentLevel;
-	}
-
-	public void replayLevel()
-	{
-		setLevel(currentLevel);
-	}
-
-	public void nextLevel()
-	{
-		currentLevel++;
-		setLevel(currentLevel);
-	}
-
-	public void centerCamera(Vector3 pos, bool animate = true)
-	{
-		cameraLerp = pos + new Vector3(1, 1, -1);
-		if (!animate)
+		public void replayLevel()
 		{
-			camera.transform.position = cameraLerp;
+			setLevel(_currentLevel);
+		}
+
+		public void nextLevel()
+		{
+			_currentLevel++;
+			setLevel(_currentLevel);
+		}
+
+		public void centerCamera(Vector3 pos, bool animate = true)
+		{
+			_cameraLerp = pos + new Vector3(1, 1, -1);
+			if (!animate)
+			{
+				camera.transform.position = _cameraLerp;
+			}
+		}
+
+		void Update()
+		{
+			if (_cameraLerp != null)
+			{
+				camera.transform.position = Vector3.Lerp(camera.transform.position, _cameraLerp, 0.1f);
+			}
 		}
 	}
-	// Update is called once per frame
-	void Update () {
-		if(cameraLerp != null){
-			camera.transform.position = Vector3.Lerp (camera.transform.position, cameraLerp, 0.1f);
-		}
-	}
+	
 }

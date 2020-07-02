@@ -41,8 +41,16 @@
         </e>
         <e p="Scripts" t="Include">
           <e p="Board" t="Include">
-            <e p="Board.cs" t="Include" />
+            <e p="Bot" t="Include">
+              <e p="BotLogic.cs" t="Include" />
+            </e>
             <e p="Cell.cs" t="Include" />
+            <e p="ChessBoard.cs" t="Include" />
+            <e p="controllers" t="Include">
+              <e p="FightController.cs" t="Include" />
+              <e p="GameController.cs" t="Include" />
+            </e>
+            <e p="PieceInteraction.cs" t="Include" />
             <e p="Pieces" t="Include">
               <e p="BasePiece.cs" t="Include" />
               <e p="Bishop.cs" t="Include" />
@@ -59,40 +67,32 @@
               <e p="TypePiece.cs" t="Include" />
             </e>
           </e>
-          <e p="BotLogic.cs" t="Include" />
-          <e p="controllers" t="Include">
-            <e p="data" t="Include">
-              <e p="FightActionIcon.cs" t="Include" />
-              <e p="GameAction.cs" t="Include" />
-            </e>
-            <e p="EventController.cs" t="Include" />
-            <e p="FightController.cs" t="Include" />
-            <e p="GameController.cs" t="Include" />
-          </e>
           <e p="data" t="Include">
-            <e p="GameState.cs" t="Include" />
+            <e p="BoardAction.cs" t="Include" />
+            <e p="GameData.cs" t="Include" />
+            <e p="GameEvents.cs" t="Include" />
             <e p="InteractiveMove.cs" t="Include" />
             <e p="Relation.cs" t="Include" />
+            <e p="ZIndex.cs" t="Include" />
           </e>
-          <e p="Engine.cs" t="Include" />
           <e p="Game.cs" t="Include" />
-          <e p="GameData.cs" t="Include" />
-          <e p="GameInput.cs" t="Include" />
-          <e p="PrefabsList.cs" t="Include" />
-          <e p="ResourceCache.cs" t="Include" />
-          <e p="UI" t="Include">
+          <e p="GInput" t="Include">
+            <e p="GameInput.cs" t="Include" />
+          </e>
+          <e p="GUI" t="Include">
             <e p="FightUI.cs" t="Include" />
             <e p="GameUI.cs" t="Include" />
             <e p="icons" t="Include">
+              <e p="FightActionIcon.cs" t="Include" />
               <e p="InteractionIcon.cs" t="Include" />
             </e>
             <e p="menu" t="Include">
-              <e p="game_menu" t="Include">
+              <e p="GameMenu" t="Include">
                 <e p="BaseGameMenu.cs" t="Include" />
                 <e p="LevelCompleteMenu.cs" t="Include" />
                 <e p="ReplayMenu.cs" t="Include" />
               </e>
-              <e p="main_menu" t="Include">
+              <e p="MainMenu" t="Include">
                 <e p="ChooseLevelButton.cs" t="Include" />
                 <e p="LevelsContainer.cs" t="Include" />
                 <e p="MainMenu.cs" t="Include" />
@@ -101,10 +101,9 @@
             <e p="PieceStats.cs" t="Include" />
           </e>
           <e p="util" t="Include">
-            <e p="PieceInteraction.cs" t="Include" />
-            <e p="Prefabs.cs" t="Include" />
+            <e p="PrefabsList.cs" t="Include" />
+            <e p="ResourceCache.cs" t="Include" />
           </e>
-          <e p="ZIndex.cs" t="Include" />
         </e>
       </e>
       <e p="ChessRun.sln" t="IncludeFlat" />

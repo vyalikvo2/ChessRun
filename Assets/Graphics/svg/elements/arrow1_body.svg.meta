@@ -1,14 +1,27 @@
 fileFormatVersion: 2
 guid: e6031f971df204547bf0b248be6a2231
 ScriptedImporter:
-  fileIDToRecycleName:
-    100000: gameObject/arrow1_body
-    400000: gameObject/arrow1_body/Transform
-    2800000: texAtlas
-    21200000: gameObject/arrow1_body/SpriteRenderer
-    21300000: sprite
-    100100000: gameObject
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: gameObject/arrow1_body
+  - first:
+      4: 400000
+    second: gameObject/arrow1_body/Transform
+  - first:
+      28: 2800000
+    second: texAtlas
+  - first:
+      212: 21200000
+    second: gameObject/arrow1_body/SpriteRenderer
+  - first:
+      213: 21300000
+    second: sprite
+  - first:
+      1001: 100100000
+    second: gameObject
   externalObjects: {}
+  serializedVersion: 2
   userData: 
   assetBundleName: 
   assetBundleVariant: 
@@ -20,7 +33,8 @@ ScriptedImporter:
   alignment: 4
   customPivot: {x: 0, y: 0}
   generatePhysicsShape: 0
-  preserveViewport: 1
+  viewportOptions: 1
+  preserveViewport: 0
   advancedMode: 0
   predefinedResolutionIndex: 1
   targetResolution: 1080
@@ -39,6 +53,7 @@ ScriptedImporter:
   filterMode: 1
   sampleCount: 4
   preserveSVGImageAspect: 1
+  useSVGPixelsPerUnit: 0
   spriteData:
     TessellationDetail: 0
     SpriteRect:
@@ -54,4 +69,5 @@ ScriptedImporter:
         width: 0
         height: 0
       spriteID: 3ada1cc0f27bb824e8e896662c8f829b
+      internalID: 0
     PhysicsOutlines: []

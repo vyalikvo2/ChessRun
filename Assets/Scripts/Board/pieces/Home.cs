@@ -1,26 +1,30 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 
-public class Home : BasePiece
+namespace ChessRun.Board.Pieces
 {
-	public override void Setup(Vector2 pos)
+	public class Home : BasePiece
 	{
-		type = TypePiece.BUILDING_HOME;
-		
-		moves = new List<Vector2> () {
+		public override void Setup(Vector2 pos)
+		{
+			type = TypePiece.BUILDING_HOME;
 
-		};
-		
-		movesAttack = new List<Vector2> () {
-		};
+			moves = new List<Vector2>()
+			{
 
-		base.Setup (pos);
+			};
+
+			movesAttack = new List<Vector2>()
+			{
+			};
+
+			base.Setup(pos);
+		}
+
+		public override bool isInteractableWith(BasePiece piece)
+		{
+			return piece.type == TypePiece.KING_HORSE || piece.type == TypePiece.KING;
+		}
+
 	}
-	
-	public override bool isInteractableWith(BasePiece piece)
-	{
-		return piece.type == TypePiece.KING_HORSE || piece.type == TypePiece.KING;
-	}
-	
 }
