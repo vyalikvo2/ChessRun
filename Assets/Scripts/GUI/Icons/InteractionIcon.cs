@@ -13,7 +13,7 @@ namespace ChessRun.GUI
 
         private string _sprite;
 
-        public string sprite
+        public string Sprite
         {
             get { return _sprite; }
             set
@@ -22,11 +22,11 @@ namespace ChessRun.GUI
                 _sprite = value;
                 Sprite sprite = Resources.Load<Sprite>(value) as Sprite;
                 Debug.Log("SPRITE " + sprite + " | " + value);
-                spriteRenderer.sprite = sprite;
+                _spriteRenderer.sprite = sprite;
             }
         }
 
-        private SpriteRenderer spriteRenderer;
+        private SpriteRenderer _spriteRenderer;
 
         private bool _visible = true;
 
@@ -37,15 +37,15 @@ namespace ChessRun.GUI
             {
                 if (_visible == value) return;
                 _visible = value;
-                spriteRenderer.enabled = _visible;
+                _spriteRenderer.enabled = _visible;
             }
         }
 
         public void Setup()
         {
-            spriteRenderer = GetComponent<SpriteRenderer>();
-            spriteRenderer.sortingOrder = 100;
-            sprite = ICON_INTERACTION;
+            _spriteRenderer = GetComponent<SpriteRenderer>();
+            _spriteRenderer.sortingOrder = 100;
+            Sprite = ICON_INTERACTION;
         }
 
     }

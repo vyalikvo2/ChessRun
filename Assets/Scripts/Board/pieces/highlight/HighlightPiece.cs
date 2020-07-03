@@ -5,10 +5,10 @@ namespace ChessRun.Board.Pieces.Highlight
 	public class HighlightPiece : BasePiece
 	{
 
-		[SerializeField] public Sprite cell_highlighted;
-		[SerializeField] public Sprite cell_next;
-		[SerializeField] public Sprite cell_current;
-		[SerializeField] public Sprite cell_attack;
+		[SerializeField] public Sprite CellHighlighted;
+		[SerializeField] public Sprite CellNext;
+		[SerializeField] public Sprite CellCurrent;
+		[SerializeField] public Sprite CellAttack;
 
 		public override void Setup(Vector2 pos)
 		{

@@ -48,7 +48,7 @@
             <e p="ChessBoard.cs" t="Include" />
             <e p="controllers" t="Include">
               <e p="FightController.cs" t="Include" />
-              <e p="GameController.cs" t="Include" />
+              <e p="СGameController.cs" t="Include" />
             </e>
             <e p="PieceInteraction.cs" t="Include" />
             <e p="Pieces" t="Include">
@@ -72,10 +72,10 @@
             <e p="GameData.cs" t="Include" />
             <e p="GameEvents.cs" t="Include" />
             <e p="InteractiveMove.cs" t="Include" />
-            <e p="Relation.cs" t="Include" />
+            <e p="PieceRelation.cs" t="Include" />
             <e p="ZIndex.cs" t="Include" />
           </e>
-          <e p="Game.cs" t="Include" />
+          <e p="GameEngine.cs" t="Include" />
           <e p="GInput" t="Include">
             <e p="GameInput.cs" t="Include" />
           </e>

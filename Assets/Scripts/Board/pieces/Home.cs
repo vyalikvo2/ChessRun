@@ -7,23 +7,23 @@ namespace ChessRun.Board.Pieces
 	{
 		public override void Setup(Vector2 pos)
 		{
-			type = TypePiece.BUILDING_HOME;
+			Type = TypePiece.BUILDING_HOME;
 
-			moves = new List<Vector2>()
+			Moves = new List<Vector2>()
 			{
 
 			};
 
-			movesAttack = new List<Vector2>()
+			MovesAttack = new List<Vector2>()
 			{
 			};
 
 			base.Setup(pos);
 		}
 
-		public override bool isInteractableWith(BasePiece piece)
+		public override bool IsInteractableWith(BasePiece piece)
 		{
-			return piece.type == TypePiece.KING_HORSE || piece.type == TypePiece.KING;
+			return piece.Type == TypePiece.KING_HORSE || piece.Type == TypePiece.KING;
 		}
 
 	}

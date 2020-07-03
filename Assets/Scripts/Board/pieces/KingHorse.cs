@@ -7,7 +7,7 @@ namespace ChessRun.Board.Pieces
 	{
 		public override void Setup(Vector2 pos)
 		{
-			moves = new List<Vector2>()
+			Moves = new List<Vector2>()
 			{
 				new Vector2(-1, -2), // bottom left
 				new Vector2(-1, 2), // top left
@@ -19,9 +19,9 @@ namespace ChessRun.Board.Pieces
 				new Vector2(1, 2) // right
 			};
 
-			movesAttack = moves;
+			MovesAttack = Moves;
 
-			interactiveMoves = new List<InteractiveMove>()
+			InteractiveMoves = new List<InteractiveMove>()
 			{
 				new InteractiveMove(new Vector2(-1, 1), InteractionType.KING_FROM_HORSE), // top left
 				new InteractiveMove(new Vector2(1, -1), InteractionType.KING_FROM_HORSE), // bottom right
@@ -33,14 +33,14 @@ namespace ChessRun.Board.Pieces
 				new InteractiveMove(new Vector2(1, 0), InteractionType.KING_FROM_HORSE) // right
 			};
 
-			type = TypePiece.KING_HORSE;
-			canJump = true;
+			Type = TypePiece.KING_HORSE;
+			CanJump = true;
 
 			base.Setup(pos);
 
-			createStats();
-			stats.health = 2;
-			stats.attack = 2;
+			CreateStats();
+			Stats.health = 2;
+			Stats.attack = 2;
 		}
 	}
 }

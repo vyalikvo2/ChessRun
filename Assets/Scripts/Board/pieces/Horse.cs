@@ -7,7 +7,7 @@ namespace ChessRun.Board.Pieces
 	{
 		public override void Setup(Vector2 pos)
 		{
-			moves = new List<Vector2>()
+			Moves = new List<Vector2>()
 			{
 				new Vector2(-1, -2), // bottom left
 				new Vector2(-1, 2), // top left
@@ -19,21 +19,21 @@ namespace ChessRun.Board.Pieces
 				new Vector2(1, 2) // right
 			};
 
-			movesAttack = moves;
+			MovesAttack = Moves;
 
-			type = TypePiece.HORSE;
-			canJump = true;
+			Type = TypePiece.HORSE;
+			CanJump = true;
 
 			base.Setup(pos);
 
-			createStats();
-			stats.health = 2;
-			stats.attack = 2;
+			CreateStats();
+			Stats.health = 2;
+			Stats.attack = 2;
 		}
 
-		public override bool isInteractableWith(BasePiece piece)
+		public override bool IsInteractableWith(BasePiece piece)
 		{
-			return piece.type == TypePiece.KING;
+			return piece.Type == TypePiece.KING;
 		}
 
 	}

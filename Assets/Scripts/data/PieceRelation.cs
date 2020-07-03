@@ -1,4 +1,4 @@
-﻿public class Relation {
+﻿public class PieceRelation {
     public static int SELF = 0;
     public static int ENEMY = 1;
     public static int NEURAL = 2;

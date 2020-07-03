@@ -5,24 +5,24 @@ namespace ChessRun.GUI.Menu
 {
     public class LevelCompleteMenu: BaseGameMenu
     {
-        [HideInInspector] public GameUI gameUI;
+        [HideInInspector] public GameUI GameUI;
 
-        public override void onShow()
+        protected override void OnShow()
         {
             GameObject lvlTxtObj = transform.Find("LevelTxt").gameObject;
-            lvlTxtObj.GetComponent<Text>().text = (gameUI.game.getCurrentLevel() + 1) + "";
+            lvlTxtObj.GetComponent<Text>().text = (GameUI.GameEngine.GetCurrentLevel() + 1) + "";
         }
         
         public void btn_replayLevel()
         {
-            gameUI.setMenu(MenuType.NONE);
-            gameUI.game.replayLevel();
+            GameUI.SetMenu(MenuType.NONE);
+            GameUI.GameEngine.ReplayLevel();
         }
         
         public void btn_nextLevel()
         {
-            gameUI.setMenu(MenuType.NONE);
-            gameUI.game.nextLevel();
+            GameUI.SetMenu(MenuType.NONE);
+            GameUI.GameEngine.NextLevel();
         }
         
         public void btn_toMenu()

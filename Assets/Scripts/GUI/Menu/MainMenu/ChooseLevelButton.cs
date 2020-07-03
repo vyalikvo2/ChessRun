@@ -6,12 +6,12 @@ namespace ChessRun.GUI.Menu
 	public class ChooseLevelButton : MonoBehaviour, IPointerClickHandler
 	{
 
-		public int level = 0;
+		public int Level = 0;
 
 		public void OnPointerClick(PointerEventData eventData)
 		{
 
-			GameData.choosedLevel = level;
+			GameData.ChoosedLevel = Level;
 			Application.LoadLevel("Game");
 		}
 

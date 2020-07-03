@@ -12,8 +12,8 @@ public class BoardAction
     
     public const string INTERACTION = "interaction";
 
-   [HideInInspector] public string name = NONE;
-   [HideInInspector] public Cell cellFrom;
-   [HideInInspector] public Cell cellTo;
+   [HideInInspector] public string Name = NONE;
+   [HideInInspector] public Cell CellFrom;
+   [HideInInspector] public Cell CellTo;
 
 }

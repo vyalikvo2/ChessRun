@@ -17,30 +17,30 @@ namespace ChessRun.Board
 		public static int W = 50;
 		public static int H = 50;
 
-		private Game _game;
+		private GameEngine _gameEngine;
 
-		public Cell[,] cells = new Cell[H, W];
+		public Cell[,] Cells = new Cell[H, W];
 
-		[SerializeField] public GameObject cellPrefab;
+		[SerializeField] private GameObject _cellPrefab;
 
 		private List<HighlightPiece> _piecesHighlighted = new List<HighlightPiece>();
 		private HighlightPiece _currentPosPieceHighligh;
 		private ScalableArrow _currentArrow;
 		
-		[HideInInspector] public FightController fight;
-		[HideInInspector] public BotLogic botLogic;
+		[HideInInspector] public FightController Fight;
+		[HideInInspector] public BotLogic BotLogic;
 		
 		
 		public void Setup()
 		{
-			_game = GetComponent<Game>();
+			_gameEngine = GetComponent<GameEngine>();
 			
-			fight = GetComponent<FightController>();
-			fight.Setup(this);
+			Fight = GetComponent<FightController>();
+			Fight.Setup(this);
 
-			botLogic = GetComponent<BotLogic>();
+			BotLogic = GetComponent<BotLogic>();
 
-			Game.gameController.onNextActionChanged += _onNextActionChanged;
+			GameEngine.GameController.OnNextActionChanged += _onNextActionChanged;
 		}
 		
 		public void CreateByMap(string[] map)
@@ -51,51 +51,252 @@ namespace ChessRun.Board
 				for (var j = 0; j < map[i].Length; j++)
 				{
 					if (map[i][j] == TypePiece.NONE) continue;
-					GameObject obj = Instantiate(cellPrefab, gameObject.transform) as GameObject;
+					GameObject obj = Instantiate(_cellPrefab, gameObject.transform) as GameObject;
 					Cell cell = obj.GetComponent<Cell>();
 
 					int i2 = maxY - i - 1;
 					cell.Setup(new Vector2(j, i2));
 
-					cells[i2, j] = cell;
+					Cells[i2, j] = cell;
 
-					createPieceFromMap(map[i][j], new Vector2(j, i2));
+					_createPieceFromMap(map[i][j], new Vector2(j, i2));
 
 					if (map[i][j] == TypePiece.KING)
 					{
-						_game.centerCamera(cell.transform.position, false);
+						_gameEngine.CenterCamera(cell.transform.position, false);
 					}
 				}
 			}
 		}
-
-		private void createPieceFromMap(char ch, Vector2 pos)
+		
+		
+		public void updateDraggingAction(Vector3 pos)
 		{
-			if (ch == TypePiece.EMPTY || ch == TypePiece.NONE)
-				return;
-			
-			BasePiece basePiece = createPieceFromChar(ch);
-			basePiece.pos = pos;
-			
-			addPiece(basePiece);
+			Cell cell = GameEngine.GameController.GetNextAction().CellFrom;
+			Vector3 pos1 = new Vector3(cell.Pos.x * GameEngine.CELL_SIZE, cell.Pos.y * GameEngine.CELL_SIZE, 0);
+			_currentArrow.width = (int) Vector3.Distance(pos1, pos);
 
+			Vector3 direction = pos - pos1;
+			float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+			_currentArrow.setRotation(angle);
+
+			RecalculateDraggingAction(pos);
+		}
+		
+		
+		public void MovePiece(Cell cell1, Cell cell2)
+		{
+			BasePiece piece = cell1.Piece;
+
+			GameEngine.GameController.MovePieceTo(piece, cell2.Pos);
+
+			cell2.Piece = cell1.Piece;
+			cell1.Piece = null;
+		}
+		
+		public void AttackPiece(Cell cell1, Cell cell2)
+		{
+			Fight.BeginAttack(cell1, cell2);
+		}
+		
+		public void ContinueFight(Cell cell2)
+		{
+			GameEngine.GameController.MyMoveAttackCellContinue();
+			if (cell2.AttackerPiece.Relation == PieceRelation.SELF)
+			{
+				Fight.AnimateFightCellAttackerAttack(cell2);
+			}
+			else if(cell2.Piece.Relation == PieceRelation.SELF)
+			{
+				Fight.AnimateFightCellDefenderAttack(cell2);
+			}
 		}
 
-		public BasePiece createPieceFromChar(char ch)
+		public void AttackHelpPiece(Cell cell1, Cell cell2)
+		{
+			Fight.AnimateAllyHelpAttack(cell1, cell2);
+		}
+		
+		public void DefendHelpPiece(Cell cell1, Cell cell2)
+		{
+			Fight.AnimateAllyHelpDefend(cell1, cell2);
+		}
+		
+		public bool ProcessKilling(Cell fightCell, FightCellResult fightCellResult)
+		{
+			bool gameOver = false;
+			
+			if (fightCellResult == FightCellResult.KILLED_DEFENDER)
+			{
+				if (fightCell.Piece.Relation == PieceRelation.SELF && (fightCell.Piece.Type == TypePiece.KING || fightCell.Piece.Type == TypePiece.KING_HORSE)) // check gameover
+					gameOver = true;
+
+				_destroyPiece (fightCell.Piece);
+				fightCell.Piece = fightCell.AttackerPiece;
+			} 
+			else if (fightCellResult == FightCellResult.KILLED_ATTACKER)
+			{
+				if (fightCell.AttackerPiece.Relation == PieceRelation.SELF && (fightCell.AttackerPiece.Type == TypePiece.KING || fightCell.AttackerPiece.Type == TypePiece.KING_HORSE)) // check gameover
+					gameOver = true;
+				
+				_destroyPiece (fightCell.AttackerPiece);
+			}
+			
+			fightCell.AttackerPiece = null;
+			fightCell.HasFight = false;
+			
+			return gameOver;
+		}
+
+		public void CreateFightAtCell(Cell attacker, Cell defender)
+		{
+			defender.AttackerPiece = attacker.Piece;
+			defender.AttackerPiece.pos = defender.Pos;
+			defender.HasFight = true;
+			attacker.Piece = null;
+		}
+		
+		
+		public Vector3 GetLocal3Position(Vector2 pos)
+		{
+			return new Vector3(pos.x * GameEngine.POS_TO_COORDS , pos.y * GameEngine.POS_TO_COORDS, 0);
+		}
+		
+		
+		public bool IsFreeCellsToMove(Vector2 startPos, Vector2 endPos)
+		{
+			int xDir = Math.Sign((endPos - startPos).x);
+			int yDir = Math.Sign((endPos - startPos).y);
+
+			Vector2 curPos = startPos;
+			for (int i = 0; i < 5; i++)
+			{
+				curPos += new Vector2(xDir, yDir);
+				if (curPos == endPos) break;
+				
+				Cell cell = GetCellAt(curPos);
+				if (!cell) return false;
+				if (cell.Piece) return false;
+			}
+
+			return true;
+		}
+
+		public Cell GetCellAt(Vector2 pos){
+			return Cells[(int)pos.y,(int)pos.x] as Cell;
+		}
+
+		
+		// lighing next cell that we can put in a piece
+		public void RecalculateDraggingAction(Vector3 pos)
+		{
+			// find highlighet piece by pos
+			bool foundNextCell = false;
+			for (int i = 0; i < _piecesHighlighted.Count; i++)
+			{
+				Vector2 nextBoardPos = new Vector2(Mathf.Round(pos.x/GameEngine.CELL_SIZE), Mathf.Round(pos.y/GameEngine.CELL_SIZE));
+				HighlightPiece pieceComponent = _piecesHighlighted[i];
+				
+				if (pieceComponent.pos.x == nextBoardPos.x && pieceComponent.pos.y == nextBoardPos.y)
+				{
+					foundNextCell = true;
+					Cell prevCell = GameEngine.GameController.GetNextAction().CellFrom;
+					Cell nextCell = GetCellAt(nextBoardPos);
+					
+					if(nextCell.Piece && (nextCell.Piece.Relation == PieceRelation.ENEMY || nextCell.HasFight))
+					{
+						if (nextCell.HasFight)
+						{
+							if (nextCell.Piece.Relation == PieceRelation.ENEMY && nextCell.AttackerPiece.Relation == PieceRelation.SELF)
+							{
+								pieceComponent.sprite = BasePiece.H_CELL_ENEMY;
+								GameEngine.GameController.UpdateNextActionCell(nextCell, BoardAction.ATTACK_HELP);
+							}
+							else if (nextCell.Piece.Relation == PieceRelation.SELF && nextCell.AttackerPiece.Relation == PieceRelation.ENEMY)
+							{
+								pieceComponent.sprite = BasePiece.H_CELL_ENEMY;
+								GameEngine.GameController.UpdateNextActionCell(nextCell, BoardAction.DEFEND_HELP);
+							}
+							
+						}
+						else if(nextCell.Piece.Relation == PieceRelation.ENEMY)
+						{
+							pieceComponent.sprite = BasePiece.H_CELL_ENEMY;
+							GameEngine.GameController.UpdateNextActionCell(nextCell, BoardAction.ATTACK);
+						}
+					} 
+					else
+					{
+						pieceComponent.sprite = BasePiece.H_CELL_MOVE_TO;
+						InteractionType interactionType = PieceInteraction.GetType(prevCell, nextCell);
+						
+						if (interactionType == InteractionType.NONE)
+						{
+							GameEngine.GameController.UpdateNextActionCell(nextCell, BoardAction.MOVE);
+						}
+						else if (interactionType == InteractionType.END_LEVEL || interactionType == InteractionType.END_LEVEL_FROM_HORSE)
+						{
+							GameEngine.GameController.UpdateNextActionCell(nextCell, BoardAction.END_LEVEL);
+						}
+						else
+						{
+							GameEngine.GameController.UpdateNextActionCell(nextCell, BoardAction.INTERACTION);
+						}
+						
+					}
+					
+				} 
+				else 
+				{
+					pieceComponent.sprite = BasePiece.H_CELL_HIGHLIGHTED;
+				}
+			}
+
+			if (!foundNextCell)
+			{
+				GameEngine.GameController.UpdateNextActionCell(null, BoardAction.MOVE);
+			}
+
+		}
+				
+		public BasePiece CreatePieceFromChar(char ch)
 		{
 			GameObject prefab = ResourceCache.getPrefab(BasePiece.BASE_PREFAB);
 			GameObject obj = Instantiate(prefab, gameObject.transform, true);
 			BasePiece basePiece = _addPieceScriptByChar(obj, ch);
 			basePiece.sprite = _getSpriteNameFromChar(ch);
-			basePiece.relation = _getRelationFromChar(ch);
+			basePiece.Relation = _getRelationFromChar(ch);
 			
 			basePiece.Setup(Vector2.zero);
 
 			return basePiece;
 		}
 		
+		public void ClearMovingUI()
+		{
+			_removeHighlightMoves();
+			_currentArrow.visible = false;
+		}
+				
+		public void ClearBoard()
+		{
+			_removeHighlightMoves ();
+
+			for (int i=0; i<H; i++) {
+				for (int j=0; j<W; j++) {
+					if(Cells[i,j]){
+						_removePiecesAtCell(Cells[i,j]);
+						Cells[i,j].Destructor();
+						Destroy(Cells[i,j].gameObject);
+						Cells[i,j] = null;
+					}
+				}
+			}
+
+			Cells = new Cell[H, W];
+		}
 		
-		public HighlightPiece createHighLight(Vector2 pos)
+		private HighlightPiece _createHighLight(Vector2 pos)
 		{
 			GameObject prefab = ResourceCache.getPrefab(BasePiece.BASE_PREFAB);
 			GameObject obj = Instantiate(prefab, gameObject.transform, true);
@@ -186,7 +387,7 @@ namespace ChessRun.Board
 		private int _getRelationFromChar(char ch)
 		{
 			if (ch == TypePiece.KING || ch == TypePiece.KING_HORSE)
-				return Relation.SELF;
+				return PieceRelation.SELF;
 
 			switch (ch)
 			{
@@ -198,42 +399,42 @@ namespace ChessRun.Board
 				case TypePiece.BISHOP:
 				case TypePiece.ROOK:
 				case TypePiece.QUEEN:
-					return Relation.SELF;
+					return PieceRelation.SELF;
 				// buildings
 				case TypePiece.BUILDING_HOME:
-					return Relation.BUILDING;
+					return PieceRelation.BUILDING;
 			}
 
-			return Relation.ENEMY;
+			return PieceRelation.ENEMY;
 		}
 
-		public void addPiece(BasePiece piece)
+		private void _addPiece(BasePiece piece)
 		{
-			cells[(int) piece.pos.y, (int) piece.pos.x].piece = piece;
+			Cells[(int) piece.pos.y, (int) piece.pos.x].Piece = piece;
 		}
 
 		private void _onNextActionChanged(BoardAction action)
 		{
-			Debug.Log(action.name);
-			switch (action.name)
+			Debug.Log(action.Name);
+			switch (action.Name)
 			{
 				case BoardAction.MOVE:
-					showMoveToAction(action.cellFrom);
+					_showMoveToAction(action.CellFrom);
 					_currentArrow.iconVisible = false;
 					break;
 				case BoardAction.ATTACK:
 					_currentArrow.iconVisible = true;
-					_currentArrow.icon.sprite = InteractionIcon.ICON_ATTACK;
+					_currentArrow.icon.Sprite = InteractionIcon.ICON_ATTACK;
 					break;
 				case BoardAction.INTERACTION:
 					_currentArrow.iconVisible = true;
-					_currentArrow.icon.sprite = InteractionIcon.ICON_INTERACTION;
+					_currentArrow.icon.Sprite = InteractionIcon.ICON_INTERACTION;
 					break;
 
 			}
 		}
 
-		public void showMoveToAction(Cell cell)
+		private void _showMoveToAction(Cell cell)
 		{
 			if (!_currentArrow)
 			{
@@ -248,141 +449,55 @@ namespace ChessRun.Board
 			_currentArrow.transform.localPosition =
 				new Vector3(cell.transform.localPosition.x, cell.transform.localPosition.y, 0);
 
-			if (!_currentPosPieceHighligh) highlightMoves(cell.piece);
+			if (!_currentPosPieceHighligh) _highlightMoves(cell.Piece);
 		}
 
-		public void updateDraggingAction(Vector3 pos)
+		private void _destroyPiece(BasePiece piece)
 		{
-			Cell cell = Game.gameController.getNextAction().cellFrom;
-			Vector3 pos1 = new Vector3(cell.pos.x * Game.CELL_SIZE, cell.pos.y * Game.CELL_SIZE, 0);
-			_currentArrow.width = (int) Vector3.Distance(pos1, pos);
-
-			Vector3 direction = pos - pos1;
-			float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-			_currentArrow.setRotation(angle);
-
-			recalculateDraggingAction(pos);
-		}
-
-		public void movePiece(Cell cell1, Cell cell2)
-		{
-			BasePiece piece = cell1.piece;
-
-			Game.gameController.movePieceTo(piece, cell2.pos);
-
-			cell2.piece = cell1.piece;
-			cell1.piece = null;
-		}
-		
-		public void attackPiece(Cell cell1, Cell cell2)
-		{
-			fight.beginAttack(cell1, cell2);
-		}
-		
-		public void continueFight(Cell cell2)
-		{
-			Game.gameController.myMoveAttackCellContinue();
-			if (cell2.attackerPiece.relation == Relation.SELF)
-			{
-				fight.animateFightCellAttackerAttack(cell2);
-			}
-			else if(cell2.piece.relation == Relation.SELF)
-			{
-				fight.animateFightCellDefenderAttack(cell2);
-			}
-		}
-
-		public void attackHelpPiece(Cell cell1, Cell cell2)
-		{
-			fight.animateAllyHelpAttack(cell1, cell2);
-		}
-		
-		public void defendHelpPiece(Cell cell1, Cell cell2)
-		{
-			fight.animateAllyHelpDefend(cell1, cell2);
-		}
-		
-		public bool processKilling(Cell fightCell, FightCellResult fightCellResult)
-		{
-			bool gameOver = false;
-			
-			if (fightCellResult == FightCellResult.KILLED_DEFENDER)
-			{
-				if (fightCell.piece.relation == Relation.SELF && (fightCell.piece.type == TypePiece.KING || fightCell.piece.type == TypePiece.KING_HORSE)) // check gameover
-					gameOver = true;
-
-				destroyPiece (fightCell.piece);
-				fightCell.piece = fightCell.attackerPiece;
-			} 
-			else if (fightCellResult == FightCellResult.KILLED_ATTACKER)
-			{
-				if (fightCell.attackerPiece.relation == Relation.SELF && (fightCell.attackerPiece.type == TypePiece.KING || fightCell.attackerPiece.type == TypePiece.KING_HORSE)) // check gameover
-					gameOver = true;
-				
-				destroyPiece (fightCell.attackerPiece);
-			}
-			
-			fightCell.attackerPiece = null;
-			fightCell.hasFight = false;
-			
-			return gameOver;
-		}
-
-		public void createFightAtCell(Cell attacker, Cell defender)
-		{
-			defender.attackerPiece = attacker.piece;
-			defender.attackerPiece.pos = defender.pos;
-			defender.hasFight = true;
-			attacker.piece = null;
-		}
-		
-		public void destroyPiece(BasePiece piece)
-		{
-			piece.gameObject.transform.SetParent (null);
 			Destroy (piece.gameObject);
 		}
 
-		public void highlightMoves(BasePiece piece)
+		private void _highlightMoves(BasePiece piece)
 		{
-			for (int i=0; i < piece.moves.Count; i++) {
-				Vector2 p = piece.pos+piece.moves[i];
+			for (int i=0; i < piece.Moves.Count; i++) {
+				Vector2 p = piece.pos+piece.Moves[i];
 				
 				if (p.x < 0 || p.y < 0) continue;
-				if (!canMoveToCellAt(p, piece)) continue;
+				if (!_canMoveToCellAt(p, piece)) continue;
 				
-				Cell cell = getCellAt(p);
+				Cell cell = GetCellAt(p);
 				
 				if(!cell) continue;
-				if (cell.piece && !cell.piece.isInteractableWith(piece) && cell.piece.type != TypePiece.BUILDING_HOME) continue; // can move only to empty cell or home
+				if (cell.Piece && !cell.Piece.IsInteractableWith(piece) && cell.Piece.Type != TypePiece.BUILDING_HOME) continue; // can move only to empty cell or home
 				
 				_createHighLightAt(p, piece.pos);
 			}
 
-			if (piece.interactiveMoves != null)
+			if (piece.InteractiveMoves != null)
 			{
-				for (int i=0; i<piece.interactiveMoves.Count; i++) {
-					Vector2 p = piece.pos + piece.interactiveMoves[i].move;
-					if (p.x < 0 || p.y < 0 || !getCellAt(p) || !canMoveToCellAt(p, piece, true) ) continue;
+				for (int i=0; i<piece.InteractiveMoves.Count; i++) {
+					Vector2 p = piece.pos + piece.InteractiveMoves[i].Move;
+					if (p.x < 0 || p.y < 0 || !GetCellAt(p) || !_canMoveToCellAt(p, piece, true) ) continue;
 					_createHighLightAt(p, piece.pos);
 				}
 			}
 			
-			if (piece.movesAttack != null)
+			if (piece.MovesAttack != null)
 			{
-				for (int i=0; i<piece.movesAttack.Count; i++) 
+				for (int i=0; i<piece.MovesAttack.Count; i++) 
 				{
-					Vector2 p = piece.pos + piece.movesAttack[i];
+					Vector2 p = piece.pos + piece.MovesAttack[i];
 					
 					if (p.x < 0 || p.y < 0) continue;
-					if (!canMoveToCellAt(p, piece)) continue;
+					if (!_canMoveToCellAt(p, piece)) continue;
 				
-					Cell cell = getCellAt(p);
+					Cell cell = GetCellAt(p);
 				
 					if(!cell) continue;
 
-					BasePiece pieceTo = cell.piece;
+					BasePiece pieceTo = cell.Piece;
 					if (!pieceTo) continue; // can attack to not empty cell
-					if (pieceTo.relation != Relation.ENEMY && !cell.hasFight) continue; // can attack only enemy or fightcell
+					if (pieceTo.Relation != PieceRelation.ENEMY && !cell.HasFight) continue; // can attack only enemy or fightcell
 
 					_createHighLightAt(p, piece.pos);
 				}
@@ -393,11 +508,11 @@ namespace ChessRun.Board
 
 		private void _createHighLightAt(Vector2 pos, Vector2 posFrom, bool isCurrentPos = false)
 		{
-			HighlightPiece component = createHighLight(pos);
+			HighlightPiece component = _createHighLight(pos);
 			
 			component.pos = pos;
 			component.zIndex = ZIndex.PIECES_HIGHLIGHT;
-			component.animateScale(0, 1.0f);
+			component.AnimateScale(0, 1.0f);
 			
 			if (!isCurrentPos) {
 				component.sprite = BasePiece.H_CELL_HIGHLIGHTED;
@@ -410,22 +525,15 @@ namespace ChessRun.Board
 			}
 		}
 
-		public void clearMovingUI()
-		{
-			removeHighlightMoves();
-			_currentArrow.visible = false;
-		}
-		public void removeHighlightMoves()
+		private void _removeHighlightMoves()
 		{
 			for (int i=0; i<_piecesHighlighted.Count; i++) 
 			{
-				_piecesHighlighted[i].gameObject.transform.SetParent(null);
 				Destroy(_piecesHighlighted[i].gameObject);
 			}
 			
 			if (_currentPosPieceHighligh) 
 			{
-				_currentPosPieceHighligh.gameObject.transform.SetParent (null);
 				Destroy (_currentPosPieceHighligh.gameObject);
 			}
 
@@ -433,113 +541,36 @@ namespace ChessRun.Board
 			_currentPosPieceHighligh = null;
 		}
 
-		public Vector3 getLocal3Position(Vector2 pos)
-		{
-			return new Vector3(pos.x * Game.POS_TO_COORDS , pos.y * Game.POS_TO_COORDS, 0);
-		}
-		
-		// lighing next cell that we can put in a piece
-		public void recalculateDraggingAction(Vector3 pos)
-		{
-			// find highlighet piece by pos
-			bool foundNextCell = false;
-			for (int i = 0; i < _piecesHighlighted.Count; i++)
-			{
-				Vector2 nextBoardPos = new Vector2(Mathf.Round(pos.x/Game.CELL_SIZE), Mathf.Round(pos.y/Game.CELL_SIZE));
-				HighlightPiece pieceComponent = _piecesHighlighted[i];
-				
-				if (pieceComponent.pos.x == nextBoardPos.x && pieceComponent.pos.y == nextBoardPos.y)
-				{
-					foundNextCell = true;
-					Cell prevCell = Game.gameController.getNextAction().cellFrom;
-					Cell nextCell = getCellAt(nextBoardPos);
-					
-					if(nextCell.piece && (nextCell.piece.relation == Relation.ENEMY || nextCell.hasFight))
-					{
-						if (nextCell.hasFight)
-						{
-							if (nextCell.piece.relation == Relation.ENEMY && nextCell.attackerPiece.relation == Relation.SELF)
-							{
-								pieceComponent.sprite = BasePiece.H_CELL_ENEMY;
-								Game.gameController.updateNextActionCell(nextCell, BoardAction.ATTACK_HELP);
-							}
-							else if (nextCell.piece.relation == Relation.SELF && nextCell.attackerPiece.relation == Relation.ENEMY)
-							{
-								pieceComponent.sprite = BasePiece.H_CELL_ENEMY;
-								Game.gameController.updateNextActionCell(nextCell, BoardAction.DEFEND_HELP);
-							}
-							
-						}
-						else if(nextCell.piece.relation == Relation.ENEMY)
-						{
-							pieceComponent.sprite = BasePiece.H_CELL_ENEMY;
-							Game.gameController.updateNextActionCell(nextCell, BoardAction.ATTACK);
-						}
-					} 
-					else
-					{
-						pieceComponent.sprite = BasePiece.H_CELL_MOVE_TO;
-						InteractionType interactionType = PieceInteraction.getType(prevCell, nextCell);
-						
-						if (interactionType == InteractionType.NONE)
-						{
-							Game.gameController.updateNextActionCell(nextCell, BoardAction.MOVE);
-						}
-						else if (interactionType == InteractionType.END_LEVEL || interactionType == InteractionType.END_LEVEL_FROM_HORSE)
-						{
-							Game.gameController.updateNextActionCell(nextCell, BoardAction.END_LEVEL);
-						}
-						else
-						{
-							Game.gameController.updateNextActionCell(nextCell, BoardAction.INTERACTION);
-						}
-						
-					}
-					
-				} 
-				else 
-				{
-					pieceComponent.sprite = BasePiece.H_CELL_HIGHLIGHTED;
-				}
-			}
+		private bool _canMoveToCellAt(Vector2 pos, BasePiece piece, bool isInteraction = false){
 
-			if (!foundNextCell)
-			{
-				Game.gameController.updateNextActionCell(null, BoardAction.MOVE);
-			}
-
-		}
-
-		public bool canMoveToCellAt(Vector2 pos, BasePiece piece, bool isInteraction = false){
-
-			Cell cell = getCellAt (pos);
+			Cell cell = GetCellAt (pos);
 			
 			if(!cell) return false;
 			
-			if (!piece.canJump)
+			if (!piece.CanJump)
 			{
-				if (!isFreeCellsToMove(piece.pos, pos)) return false;
+				if (!IsFreeCellsToMove(piece.pos, pos)) return false;
 			}
 
-			if (!cell.piece)
+			if (!cell.Piece)
 			{
 				return true;
 			}
 			
-			if (cell.piece.relation == Relation.ENEMY && isInteraction)
+			if (cell.Piece.Relation == PieceRelation.ENEMY && isInteraction)
 				return false;
 			
-			if (cell.piece.isInteractableWith(piece))
+			if (cell.Piece.IsInteractableWith(piece))
 			{
 				return true;
 			}
 
-			if (cell.piece.relation == Relation.ENEMY)
+			if (cell.Piece.Relation == PieceRelation.ENEMY)
 			{
 				return true;
 			}
 			
-			if (cell.hasFight && (cell.piece.relation == Relation.ENEMY || cell.attackerPiece.relation == Relation.ENEMY))
+			if (cell.HasFight && (cell.Piece.Relation == PieceRelation.ENEMY || cell.AttackerPiece.Relation == PieceRelation.ENEMY))
 			{
 				return true;
 			}
@@ -547,68 +578,38 @@ namespace ChessRun.Board
 			return false;
 		}
 
-		public bool isFreeCellsToMove(Vector2 startPos, Vector2 endPos)
-		{
-			int xDir = Math.Sign((endPos - startPos).x);
-			int yDir = Math.Sign((endPos - startPos).y);
-
-			Vector2 curPos = startPos;
-			for (int i = 0; i < 5; i++)
-			{
-				curPos += new Vector2(xDir, yDir);
-				if (curPos == endPos) break;
-				
-				Cell cell = getCellAt(curPos);
-				if (!cell) return false;
-				if (cell.piece) return false;
-			}
-
-			return true;
-		}
-
-		public Cell getCellAt(Vector2 pos){
-			return cells[(int)pos.y,(int)pos.x] as Cell;
-		}
-
 		private void _removePieces(List<BasePiece> list){
 			for (int i=0; i<list.Count; i++) {
 				list[i].Destructor();
-				list[i].gameObject.transform.SetParent(null);
 				Destroy(list[i].gameObject);
 			}
 		}
 
 		private void _removePiecesAtCell(Cell cell)
 		{
-			if (cell.piece)
+			if (cell.Piece)
 			{
-				cell.piece.Destructor();
-				Destroy(cell.piece.gameObject);
+				cell.Piece.Destructor();
+				Destroy(cell.Piece.gameObject);
 			}
-			if (cell.attackerPiece)
+			if (cell.AttackerPiece)
 			{
-				cell.attackerPiece.Destructor();
-				Destroy(cell.attackerPiece.gameObject);
+				cell.AttackerPiece.Destructor();
+				Destroy(cell.AttackerPiece.gameObject);
 			}
 		}
 		
-		public void clearBoard()
+		private void _createPieceFromMap(char ch, Vector2 pos)
 		{
-			removeHighlightMoves ();
+			if (ch == TypePiece.EMPTY || ch == TypePiece.NONE)
+				return;
+			
+			BasePiece basePiece = CreatePieceFromChar(ch);
+			basePiece.pos = pos;
+			
+			_addPiece(basePiece);
 
-			for (int i=0; i<H; i++) {
-				for (int j=0; j<W; j++) {
-					if(cells[i,j]){
-						_removePiecesAtCell(cells[i,j]);
-						cells[i,j].Destructor();
-						cells[i,j].gameObject.transform.SetParent(null);
-						Destroy(cells[i,j].gameObject);
-						cells[i,j] = null;
-					}
-				}
-			}
-
-			cells = new Cell[H, W];
 		}
+
 	}
 }

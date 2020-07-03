@@ -24,11 +24,11 @@ namespace ChessRun.GUI
         public static float TIME_HIDE_CIRCLE_ANIMATION = 0.2f;
         public static float TIME_HIDE_CIRCLE_ANIMATION_DELAY = 0.1f;
 
-        private Game game;
+        private GameEngine _gameEngine;
 
-        private List<FightActionIcon> renderedIcons;
+        private List<FightActionIcon> _renderedIcons;
 
-        private List<string> fightActionList = new List<string>()
+        private List<string> _fightActionList = new List<string>()
         {
             InteractionIcon.ICON_CANCEL,
             InteractionIcon.ICON_ATTACK
@@ -44,21 +44,21 @@ namespace ChessRun.GUI
         private string _lastActionSprite;
         private Cell _actionCell;
 
-        private FightUIState state = FightUIState.NONE;
+        private FightUIState _state = FightUIState.NONE;
 
         void Start()
         {
-            game = GetComponent<Game>();
+            _gameEngine = GetComponent<GameEngine>();
         }
 
-        public void displayFightInput(Cell fightCell)
+        public void DisplayFightInput(Cell fightCell)
         {
-            if (state != FightUIState.NONE) return;
+            if (_state != FightUIState.NONE) return;
 
-            state = FightUIState.ICONS;
+            _state = FightUIState.ICONS;
             _actionCell = fightCell;
 
-            renderedIcons = new List<FightActionIcon>();
+            _renderedIcons = new List<FightActionIcon>();
 
             _iconPrefab = Resources.Load("prefabs/ui/icons/CanvasIcon") as GameObject;
             _canvasPrefab = Resources.Load("prefabs/WorldCanvas") as GameObject;
@@ -70,29 +70,29 @@ namespace ChessRun.GUI
 
             _createSelectionCircle();
 
-            float angleStep = 360f / fightActionList.Count;
+            float angleStep = 360f / _fightActionList.Count;
             float curAngle = -180f;
-            float R = 100 * Game.TO_UNITS;
+            float rlength = 100 * GameEngine.TO_UNITS;
 
-            for (int i = 0; i < fightActionList.Count; i++)
+            for (int i = 0; i < _fightActionList.Count; i++)
             {
                 GameObject iconObj = Instantiate(_iconPrefab, _canvasObj.transform) as GameObject;
                 FightActionIcon icon = iconObj.GetComponent<FightActionIcon>();
                 icon.Setup();
-                icon.sprite = fightActionList[i];
+                icon.sprite = _fightActionList[i];
 
-                icon.onIconClick.AddListener(_onIconClick);
+                icon.OnIconClick.AddListener(_onIconClick);
 
                 icon.transform.localScale = Vector3.one * 0.8f;
                 icon.transform.localPosition = Vector3.zero;
 
                 icon.transform.DOScale(1, TIME_SHOW_ICONS_ANIMATION).SetDelay(TIME_SHOW_ICONS_DELAY);
                 icon.transform.DOLocalMove(
-                    new Vector3(Mathf.Cos(curAngle * Mathf.PI / 180.0f) * R,
-                        Mathf.Sin(curAngle * Mathf.PI / 180.0f) * R),
+                    new Vector3(Mathf.Cos(curAngle * Mathf.PI / 180.0f) * rlength,
+                        Mathf.Sin(curAngle * Mathf.PI / 180.0f) * rlength),
                     TIME_SHOW_ICONS_ANIMATION).SetDelay(TIME_SHOW_ICONS_DELAY);
 
-                renderedIcons.Add(icon);
+                _renderedIcons.Add(icon);
 
                 curAngle += angleStep;
             }
@@ -119,9 +119,9 @@ namespace ChessRun.GUI
 
         private void _hideFightUI()
         {
-            for (int i = 0; i < renderedIcons.Count; i++)
+            for (int i = 0; i < _renderedIcons.Count; i++)
             {
-                FightActionIcon icon = renderedIcons[i];
+                FightActionIcon icon = _renderedIcons[i];
                 // icon.transform.DOScale(0, TIME_HIDE_ICONS_ANIMATION);
                 //icon.transform.DOLocalMove(Vector3.zero, TIME_HIDE_ICONS_ANIMATION);
 
@@ -148,22 +148,20 @@ namespace ChessRun.GUI
         {
             _processAction();
 
-            state = FightUIState.NONE;
+            _state = FightUIState.NONE;
 
             if (_selectionCircle)
             {
-                _selectionCircle.transform.SetParent(null);
                 Destroy(_selectionCircle);
             }
 
-            for (int i = 0; i < renderedIcons.Count; i++)
+            for (int i = 0; i < _renderedIcons.Count; i++)
             {
-                FightActionIcon icon = renderedIcons[i];
-                icon.transform.SetParent(null);
+                FightActionIcon icon = _renderedIcons[i];
                 Destroy(icon.gameObject);
             }
 
-            renderedIcons = new List<FightActionIcon>();
+            _renderedIcons = new List<FightActionIcon>();
         }
 
         private void _onIconClick(BaseEventData eventData)
@@ -180,10 +178,10 @@ namespace ChessRun.GUI
         {
             if (_lastActionSprite == InteractionIcon.ICON_ATTACK)
             {
-                game.board.continueFight(_actionCell);
+                _gameEngine.Board.ContinueFight(_actionCell);
             }
 
-            game.gameInput.setUIInput(false);
+            _gameEngine.GameInput.SetUiInput(false);
 
             _lastActionSprite = null;
             _actionCell = null;

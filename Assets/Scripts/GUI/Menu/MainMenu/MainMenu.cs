@@ -4,7 +4,7 @@ namespace ChessRun.GUI.Menu
 {
 	public class MainMenu : MonoBehaviour
 	{
-		public void playGame()
+		public void PlayGame()
 		{
 			Application.LoadLevel("ChooseLevel");
 		}

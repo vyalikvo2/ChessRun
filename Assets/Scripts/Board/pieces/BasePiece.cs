@@ -42,10 +42,10 @@ namespace ChessRun.Board.Pieces
 		public const string H_CELL_WHITE = CELL_PREFIX + "cell_bg_white";
 		public const string H_CELL_CURRENT = CELL_PREFIX + "cell_curposition";
 
-		public int relation = Relation.SELF;
-		public char type = TypePiece.NONE;
+		public int Relation = PieceRelation.SELF;
+		public char Type = TypePiece.NONE;
 
-		public bool canJump = false;
+		public bool CanJump = false;
 
 		private Vector2 _pos;
 
@@ -72,7 +72,7 @@ namespace ChessRun.Board.Pieces
 			}
 		}
 
-		public GameObject spriteObj;
+		public GameObject SpriteObj;
 		private Sprite _currentSprite;
 
 		[HideInInspector]
@@ -81,39 +81,45 @@ namespace ChessRun.Board.Pieces
 			get { return _currentSprite; }
 			set
 			{
-				if (!spriteObj)
+				if (!SpriteObj)
 				{
 					if (transform.childCount > 0)
-						spriteObj = transform.GetChild(0).gameObject;
+						SpriteObj = transform.GetChild(0).gameObject;
 				}
 
-				if (spriteObj.GetComponent<SpriteRenderer>().sprite != value)
+				if (SpriteObj.GetComponent<SpriteRenderer>().sprite != value)
 				{
-					spriteObj.GetComponent<SpriteRenderer>().sprite = value;
+					SpriteObj.GetComponent<SpriteRenderer>().sprite = value;
 					_currentSprite = value;
 				}
 			}
 		}
 
-		public List<Vector2> moves;
-		public List<Vector2> movesAttack;
-		public List<InteractiveMove> interactiveMoves;
+		public List<Vector2> Moves;
+		public List<Vector2> MovesAttack;
+		public List<InteractiveMove> InteractiveMoves;
 
-		public PieceStats stats;
-		public FightCellStatus fightCellStatus = FightCellStatus.NORMAL;
+		public PieceStats Stats;
+		public FightCellStatus FightStatus = FightCellStatus.NORMAL;
 
+		
+		
+		private SpriteRenderer _spriteRenderer;
 		private int _zIndex = 0;
-
 		public int zIndex
 		{
 			get { return _zIndex; }
 			set
 			{
 				_zIndex = value;
-				if (spriteObj)
-					spriteObj.GetComponent<SpriteRenderer>().sortingOrder = _zIndex;
-				if (stats)
-					stats.zIndex = _zIndex;
+				if (SpriteObj)
+				{
+					if (_spriteRenderer == null) _spriteRenderer = SpriteObj.GetComponent<SpriteRenderer>();
+					_spriteRenderer.sortingOrder = _zIndex;
+				}
+				
+				if (Stats)
+					Stats.zIndex = _zIndex;
 			}
 		}
 
@@ -124,44 +130,44 @@ namespace ChessRun.Board.Pieces
 			if (_inited) return;
 			_inited = true;
 
-			setBoardPosition(pos);
+			SetBoardPosition(pos);
 
 			zIndex = ZIndex.PIECES_MY;
 		}
 
-		public void createStats()
+		protected void CreateStats()
 		{
 			GameObject statsPrefab = ResourceCache.getPrefab("prefabs/PieceStats");
 			GameObject statsObj = Instantiate(statsPrefab, gameObject.transform) as GameObject;
-			stats = statsObj.GetComponent<PieceStats>();
-			stats.transform.localPosition = new Vector3(0, 0, 0);
+			Stats = statsObj.GetComponent<PieceStats>();
+			Stats.transform.localPosition = new Vector3(0, 0, 0);
 		}
 
 		// recalculate setter (cause of mouse dragging)
-		public virtual void RefreshPos()
+		protected virtual void RefreshPos()
 		{
-			transform.localPosition = new Vector3(pos.x * Game.POS_TO_COORDS, pos.y * Game.POS_TO_COORDS, 0);
+			transform.localPosition = new Vector3(pos.x * GameEngine.POS_TO_COORDS, pos.y * GameEngine.POS_TO_COORDS, 0);
 		}
 
-		public bool hasKing()
+		public bool HasKing()
 		{
-			return type == TypePiece.KING || type == TypePiece.KING_HORSE;
+			return Type == TypePiece.KING || Type == TypePiece.KING_HORSE;
 		}
 
-		public virtual void setBoardPosition(Vector2 pos)
+		public virtual void SetBoardPosition(Vector2 pos)
 		{
 			this.pos = pos;
 		}
 
-		public virtual void animateScale(float from, float to)
+		public virtual void AnimateScale(float from, float to)
 		{
 			transform.localScale = Vector3.one * from;
 			transform.DOScale(Vector3.one * to, 1f);
 		}
 
-		public virtual void killedAnimation(int direction, float delay, TweenCallback onPlayed)
+		public virtual void KilledAnimation(int direction, float delay, TweenCallback onPlayed)
 		{
-			SpriteRenderer spriteRenderer = spriteObj.GetComponent<SpriteRenderer>();
+			SpriteRenderer spriteRenderer = SpriteObj.GetComponent<SpriteRenderer>();
 			spriteRenderer.transform
 				.DOLocalMove(spriteRenderer.transform.localPosition + new Vector3(0.4f, 0.1f, 0) * direction, 0.2f)
 				.SetDelay(delay);
@@ -169,24 +175,25 @@ namespace ChessRun.Board.Pieces
 			transform.DOScale(new Vector3(0, 0, 0), 0.4f).SetDelay(delay + 0.2f).OnComplete(onPlayed);
 		}
 
-		public void setFightStatus(FightCellStatus fightCellStatus, float time = 0.2f)
+		public void SetFightStatus(FightCellStatus fightCellStatus, float time = 0.2f)
 		{
 			Vector3 statusPosition = Vector3.zero;
-			this.fightCellStatus = fightCellStatus;
+			this.FightStatus = fightCellStatus;
 			if (fightCellStatus == FightCellStatus.DEFENDER)
 				statusPosition = new Vector3(1f, 0, 0);
 
-			stats.transform.DOLocalMove(statusPosition, time);
+			Stats.transform.DOLocalMove(statusPosition, time);
 		}
 
 		// need to be overrided ( returns interactiontype )
-		public virtual bool isInteractableWith(BasePiece piece)
+		public virtual bool IsInteractableWith(BasePiece piece)
 		{
 			return false;
 		}
 
-		public void Destructor()
+		public virtual void Destructor()
 		{
+			// override it
 		}
 
 	}

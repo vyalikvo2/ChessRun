@@ -5,12 +5,12 @@ namespace ChessRun.GUI.Menu
 {
     public class ReplayMenu: BaseGameMenu
     {
-        [HideInInspector] public GameUI gameUI;
+        [HideInInspector] public GameUI GameUI;
 
         public void btn_replayLevel()
         {
-            gameUI.setMenu(MenuType.NONE);
-            gameUI.game.replayLevel();
+            GameUI.SetMenu(MenuType.NONE);
+            GameUI.GameEngine.ReplayLevel();
         }
     }
     

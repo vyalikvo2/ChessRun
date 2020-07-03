@@ -25,45 +25,45 @@ public class GameInput : MonoBehaviour
     private int _beforeDragZIndex;
     private Cell _currentCell;
 
-    private Game _game;
+    private GameEngine _gameEngine;
     
     // Start is called before the first frame update
     void Start()
     {
-        _game = GetComponent<Game>();
+        _gameEngine = GetComponent<GameEngine>();
         _state = GameInputState.WAIT_MOVE;
     }
     
-    public void beginTouch (Vector2 touchPosition)
+    private void _beginTouch (Vector2 touchPosition)
     {
-        if (!GameController.isInputState()) return;
+        if (!СGameController.IsInputState()) return;
         if (_state != GameInputState.WAIT_MOVE) return;
         
         _mouseBeginDragPos = Camera.main.ScreenToWorldPoint(touchPosition);
-        _mouseBeginDragPos = new Vector3(_mouseBeginDragPos.x * Game.TO_PIXELS, _mouseBeginDragPos.y * Game.TO_PIXELS, 0);
+        _mouseBeginDragPos = new Vector3(_mouseBeginDragPos.x * GameEngine.TO_PIXELS, _mouseBeginDragPos.y * GameEngine.TO_PIXELS, 0);
 
-        int posX = (int) Mathf.Round(_mouseBeginDragPos.x / Game.CELL_SIZE);
-        int posY = (int) Mathf.Round(_mouseBeginDragPos.y / Game.CELL_SIZE);
+        int posX = (int) Mathf.Round(_mouseBeginDragPos.x / GameEngine.CELL_SIZE);
+        int posY = (int) Mathf.Round(_mouseBeginDragPos.y / GameEngine.CELL_SIZE);
 
-        if (posX > -1 && posY > -1 && posY < _game.board.cells.Length && posX < ChessBoard.W)
+        if (posX > -1 && posY > -1 && posY < _gameEngine.Board.Cells.Length && posX < ChessBoard.W)
         {
-            Cell cell = _game.board.cells[posY, posX];
+            Cell cell = _gameEngine.Board.Cells[posY, posX];
             
-            if (cell && !cell.hasFight && cell.piece && cell.piece.relation == Relation.SELF)
+            if (cell && !cell.HasFight && cell.Piece && cell.Piece.Relation == PieceRelation.SELF)
             {
                 _state = GameInputState.MOVING;
                 _isDragged = true;
                 _currentCell = cell;
-                BasePiece piece = cell.piece;
+                BasePiece piece = cell.Piece;
                 _beforeDragZIndex = piece.zIndex;
                 piece.zIndex = ZIndex.DRAGGING_PIECE;
                 Debug.Log("begin drag at "+posX + " " +posY);
 
-                if (Game.gameController != null) {
-                    Game.gameController.onPlayerBeginDragBoard (cell);
+                if (GameEngine.GameController != null) {
+                    GameEngine.GameController.OnPlayerBeginDragBoard (cell);
                 }
             }
-            else if (cell && cell.hasFight)
+            else if (cell && cell.HasFight)
             {
                 _state = GameInputState.FIGHT_CELL;
                 _currentCell = cell;
@@ -71,30 +71,29 @@ public class GameInput : MonoBehaviour
         }
     }
 
-    // update touch position
-    public void updateTouch(Vector2 touchPosition)
+    private void _updateTouch(Vector2 touchPosition)
     {
-        if (!GameController.isInputState()) return;
+        if (!СGameController.IsInputState()) return;
         if (_state != GameInputState.MOVING) return;
         Vector3 pos3 = Camera.main.ScreenToWorldPoint(touchPosition);
-        pos3 = new Vector3(pos3.x * Game.TO_PIXELS, pos3.y * Game.TO_PIXELS, 0);
-        _game.board.updateDraggingAction(pos3);
+        pos3 = new Vector3(pos3.x * GameEngine.TO_PIXELS, pos3.y * GameEngine.TO_PIXELS, 0);
+        _gameEngine.Board.updateDraggingAction(pos3);
     }
 
-    public void endTouch ()
+    private void _endTouch ()
     {
-        if (!GameController.isInputState()) return;
+        if (!СGameController.IsInputState()) return;
         _isDragged = false;
 
         if (_state == GameInputState.MOVING)
         {
-            if (_currentCell && _currentCell.piece)
+            if (_currentCell && _currentCell.Piece)
             {
-                _currentCell.piece.zIndex = _beforeDragZIndex;
-                if (Game.gameController !=null)
+                _currentCell.Piece.zIndex = _beforeDragZIndex;
+                if (GameEngine.GameController !=null)
                 {
                     Debug.Log("End drag piece");
-                    Game.gameController.onPlayerEndDragBoard(_currentCell);
+                    GameEngine.GameController.OnPlayerEndDragBoard(_currentCell);
                     _currentCell = null;
                 }
             }
@@ -103,22 +102,21 @@ public class GameInput : MonoBehaviour
             
         } else if (_state == GameInputState.FIGHT_CELL)
         {
-            if (_currentCell && _currentCell.hasFight)
+            if (_currentCell && _currentCell.HasFight)
             {
-                _game.fightUI.displayFightInput(_currentCell);
-                setUIInput(true);
+                _gameEngine.FightUi.DisplayFightInput(_currentCell);
+                SetUiInput(true);
             }
         }
        
     }
 
-    public void setUIInput(bool enabled)
+    public void SetUiInput(bool isEnabled)
     {
-        _state = enabled ? GameInputState.UI_INPUT : GameInputState.WAIT_MOVE;
+        _state = isEnabled ? GameInputState.UI_INPUT : GameInputState.WAIT_MOVE;
         _currentCell = null;
     }
-
-    // Update is called once per frame
+    
     void Update()
     {
         // handle global mouse
@@ -127,7 +125,7 @@ public class GameInput : MonoBehaviour
             if (!_mouseDown)
             {
                 _mouseDown = true;
-                beginTouch(Input.mousePosition);
+                _beginTouch(Input.mousePosition);
             }
         }
         else
@@ -135,13 +133,13 @@ public class GameInput : MonoBehaviour
             if (_mouseDown)
             {
                 _mouseDown = false;
-                endTouch();
+                _endTouch();
             }
         }
 
         if (_isDragged)
         {
-            updateTouch(Input.mousePosition);
+            _updateTouch(Input.mousePosition);
         }
         
         return; // no touch now

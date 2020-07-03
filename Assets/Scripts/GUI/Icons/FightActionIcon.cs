@@ -8,7 +8,7 @@ namespace ChessRun.GUI
 
     public class FightActionIcon : MonoBehaviour, IPointerClickHandler
     {
-        public EventTrigger.TriggerEvent onIconClick;
+        public EventTrigger.TriggerEvent OnIconClick;
 
         private string _sprite;
 
@@ -41,17 +41,17 @@ namespace ChessRun.GUI
 
         public void Setup()
         {
-            onIconClick = new EventTrigger.TriggerEvent();
+            OnIconClick = new EventTrigger.TriggerEvent();
             imageRenderer = GetComponent<Image>();
         }
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            if (onIconClick != null)
+            if (OnIconClick != null)
             {
                 BaseEventData eventDataCallback = new BaseEventData(EventSystem.current);
                 eventData.selectedObject = this.gameObject;
-                onIconClick.Invoke(eventDataCallback);
+                OnIconClick.Invoke(eventDataCallback);
             }
         }
 

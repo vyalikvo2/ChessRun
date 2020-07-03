@@ -9,12 +9,12 @@ namespace ChessRun.GUI.Menu
         {
             private bool _visible = true;
 
-            public virtual void onShow()
+            protected virtual void OnShow()
             {
 
             }
 
-            public void setVisible(bool visibility)
+            public void SetVisible(bool visibility)
             {
                 Text[] texts = GetComponentsInChildren<Text>();
                 for (int i = 0; i < texts.Length; i++)
@@ -32,7 +32,7 @@ namespace ChessRun.GUI.Menu
 
                 if (visibility)
                 {
-                    onShow();
+                    OnShow();
                 }
             }
         }

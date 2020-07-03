@@ -5,7 +5,7 @@ namespace ChessRun.GUI.Menu
 {
 	public class LevelsContainer : MonoBehaviour
 	{
-		private GameObject slotPrefab;
+		private GameObject _slotPrefab;
 
 		private static int W = 100;
 		private static int H = 100;
@@ -13,13 +13,12 @@ namespace ChessRun.GUI.Menu
 		private static int H_S = 20;
 		private static int MAX_X = 720;
 
-		GameObject[] levelsList;
-
-		// Use this for initialization
+		private GameObject[] _levelsList;
+		
 		void Start()
 		{
 
-			slotPrefab = Resources.Load("prefabs/menu/level_slot") as GameObject;
+			_slotPrefab = Resources.Load("prefabs/menu/level_slot") as GameObject;
 
 			int X = 0;
 			int Y = 0;
@@ -27,7 +26,7 @@ namespace ChessRun.GUI.Menu
 			for (int i = 0; i < 3; i++)
 			{
 
-				GameObject level = (GameObject) Instantiate(slotPrefab);
+				GameObject level = (GameObject) Instantiate(_slotPrefab);
 				RectTransform rect = (RectTransform) level.GetComponent<RectTransform>();
 				rect.SetParent(GetComponent<RectTransform>() as RectTransform);
 				//rect.anchoredPosition = new Vector2(X, Y);
@@ -35,7 +34,7 @@ namespace ChessRun.GUI.Menu
 				(level.transform.transform.Find("level").gameObject.GetComponent<Text>() as Text).text = "" + (i + 1);
 
 				ChooseLevelButton lvlComponent = (ChooseLevelButton) level.GetComponent<ChooseLevelButton>();
-				lvlComponent.level = i;
+				lvlComponent.Level = i;
 
 				X += W + W_S;
 				if (X > MAX_X)

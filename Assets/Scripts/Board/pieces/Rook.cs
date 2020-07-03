@@ -7,7 +7,7 @@ namespace ChessRun.Board.Pieces
 	{
 		public override void Setup(Vector2 pos)
 		{
-			moves = new List<Vector2>()
+			Moves = new List<Vector2>()
 			{
 				new Vector2(0, 1),
 				new Vector2(0, 2),
@@ -27,15 +27,15 @@ namespace ChessRun.Board.Pieces
 				new Vector2(-4, 0),
 			};
 
-			movesAttack = moves;
+			MovesAttack = Moves;
 
-			type = TypePiece.ROOK;
+			Type = TypePiece.ROOK;
 
 			base.Setup(pos);
 
-			createStats();
-			stats.attack = 3;
-			stats.health = 2;
+			CreateStats();
+			Stats.attack = 3;
+			Stats.health = 2;
 		}
 
 	}

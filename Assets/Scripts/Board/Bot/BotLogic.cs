@@ -35,16 +35,16 @@ namespace ChessRun.Board.Bot
     public class BotLogic : MonoBehaviour
     {
         private ChessBoard _board;
-        private Game _game;
+        private GameEngine _gameEngine;
         private List<BotMove> _moveList = new List<BotMove>();
 
         void Start()
         {
             _board = GetComponent<ChessBoard>();
-            _game = GetComponent<Game>();
+            _gameEngine = GetComponent<GameEngine>();
         }
 
-        public void makeBotMove()
+        public void MakeBotMove()
         {
             _moveList.Clear();
 
@@ -52,41 +52,40 @@ namespace ChessRun.Board.Bot
             {
                 for (int j = 0; j < ChessBoard.W; j++)
                 {
-                    Cell cell = _board.cells[i, j];
+                    Cell cell = _board.Cells[i, j];
                     if (!cell) continue;
-                    if (!cell.piece) continue;
+                    if (!cell.Piece) continue;
 
-                    BasePiece piece = cell.piece;
-                    if (piece.relation != Relation.ENEMY && !cell.hasFight) continue;
+                    BasePiece piece = cell.Piece;
+                    if (piece.Relation != PieceRelation.ENEMY && !cell.HasFight) continue;
 
-                    if (cell.hasFight)
+                    if (cell.HasFight)
                     {
-                        Debug.Log("addFightMove");
                         BotMove cellFightMove = new BotMove(cell, null, BotMoveType.FIGHT_CELL_CONTINUE, 2);
                         _moveList.Add(cellFightMove);
 
                         continue; // bot at fight cell cant make other moves
                     }
 
-                    for (int k = 0; k < piece.movesAttack.Count; k++)
+                    for (int k = 0; k < piece.MovesAttack.Count; k++)
                     {
-                        Vector2 attackDir = piece.movesAttack[k];
+                        Vector2 attackDir = piece.MovesAttack[k];
                         attackDir.y = -attackDir.y; // ENEMY ATTACK DIRECTION
                         Vector2 attackPos = piece.pos + attackDir;
                         if (attackPos.x < 0 || attackPos.y < 0 || attackPos.x >= ChessBoard.W ||
                             attackPos.y > ChessBoard.H) continue;
-                        Cell attackCell = _board.getCellAt(attackPos);
+                        Cell attackCell = _board.GetCellAt(attackPos);
 
-                        if (!cell.piece.canJump)
+                        if (!cell.Piece.CanJump)
                         {
-                            if (!_game.board.isFreeCellsToMove(cell.pos, attackPos)) continue;
+                            if (!_gameEngine.Board.IsFreeCellsToMove(cell.Pos, attackPos)) continue;
                         }
 
                         if (!attackCell) continue;
 
-                        if (attackCell.hasFight)
+                        if (attackCell.HasFight)
                         {
-                            if (attackCell.piece.relation == Relation.ENEMY)
+                            if (attackCell.Piece.Relation == PieceRelation.ENEMY)
                             {
                                 BotMove defendAttackMove = new BotMove(cell, attackCell, BotMoveType.DEFEND_ATTACK, 5);
                                 _moveList.Add(defendAttackMove);
@@ -98,14 +97,14 @@ namespace ChessRun.Board.Bot
                             }
 
                         }
-                        else if (cell.piece.relation == Relation.ENEMY && attackCell.piece &&
-                                 attackCell.piece.relation == Relation.SELF)
+                        else if (cell.Piece.Relation == PieceRelation.ENEMY && attackCell.Piece &&
+                                 attackCell.Piece.Relation == PieceRelation.SELF)
                         {
                             int score = 3;
-                            if (attackCell.piece.type == TypePiece.KING ||
-                                attackCell.piece.type == TypePiece.KING_HORSE)
+                            if (attackCell.Piece.Type == TypePiece.KING ||
+                                attackCell.Piece.Type == TypePiece.KING_HORSE)
                             {
-                                score = 10 + piece.stats.attack;
+                                score = 10 + piece.Stats.attack;
                             }
 
                             BotMove attackMove = new BotMove(cell, attackCell, BotMoveType.ATTACK, score);
@@ -125,43 +124,43 @@ namespace ChessRun.Board.Bot
                 });
 
                 BotMove nextMove = _moveList[0];
-                processBotMove(nextMove);
+                _processBotMove(nextMove);
 
             }
             else
             {
-                Game.gameController.endMove();
+                GameEngine.GameController.EndMove();
             }
         }
 
-        private void processBotMove(BotMove move)
+        private void _processBotMove(BotMove move)
         {
-            Game.gameController.beginBotMove();
+            GameEngine.GameController.BeginBotMove();
             Debug.Log("Process bot move " + move.type);
             if (move.type == BotMoveType.DEFEND_ATTACK)
             {
-                _board.fight.animateAllyHelpDefend(move.cellFrom, move.cellTo);
+                _board.Fight.AnimateAllyHelpDefend(move.cellFrom, move.cellTo);
             }
             else if (move.type == BotMoveType.ATTACK_HELP)
             {
-                Debug.Log(move.cellFrom.pos + " -> " + move.cellTo.pos);
-                _board.fight.animateAllyHelpAttack(move.cellFrom, move.cellTo);
+                Debug.Log(move.cellFrom.Pos + " -> " + move.cellTo.Pos);
+                _board.Fight.AnimateAllyHelpAttack(move.cellFrom, move.cellTo);
             }
             else if (move.type == BotMoveType.ATTACK)
             {
-                Debug.Log(move.cellFrom.pos + " -> " + move.cellTo.pos);
-                _board.fight.beginAttack(move.cellFrom, move.cellTo);
+                Debug.Log(move.cellFrom.Pos + " -> " + move.cellTo.Pos);
+                _board.Fight.BeginAttack(move.cellFrom, move.cellTo);
             }
             else if (move.type == BotMoveType.FIGHT_CELL_CONTINUE)
             {
-                Debug.Log(move.cellFrom.pos + " continue fight");
-                if (move.cellFrom.piece.relation == Relation.ENEMY)
+                Debug.Log(move.cellFrom.Pos + " continue fight");
+                if (move.cellFrom.Piece.Relation == PieceRelation.ENEMY)
                 {
-                    _board.fight.animateFightCellDefenderAttack(move.cellFrom);
+                    _board.Fight.AnimateFightCellDefenderAttack(move.cellFrom);
                 }
                 else
                 {
-                    _board.fight.animateFightCellAttackerAttack(move.cellFrom);
+                    _board.Fight.AnimateFightCellAttackerAttack(move.cellFrom);
                 }
 
             }

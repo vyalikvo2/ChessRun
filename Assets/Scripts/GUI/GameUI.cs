@@ -15,74 +15,74 @@ namespace ChessRun.GUI
 
 	public class GameUI : MonoBehaviour
 	{
-		[SerializeField] public GameObject levelText;
-		[SerializeField] public GameObject menuContainer;
+		[SerializeField] public GameObject LevelText;
+		[SerializeField] private GameObject _menuContainer;
 
-		[HideInInspector] public Game game;
+		[HideInInspector] public GameEngine GameEngine;
 
-		[SerializeField] public GameObject replayMenuObj;
-		[HideInInspector] public ReplayMenu replayMenu;
+		[SerializeField] private GameObject _replayMenuObj;
+		[HideInInspector] private ReplayMenu replayMenu;
 
-		[SerializeField] public GameObject levelCompleteMenuObj;
-		[HideInInspector] public LevelCompleteMenu levelCompleteMenu;
+		[SerializeField] private GameObject _levelCompleteMenuObj;
+		[HideInInspector] private LevelCompleteMenu _levelCompleteMenu;
 
-		[HideInInspector] private MenuType currentMenu = MenuType.NONE;
+		[HideInInspector] private MenuType _currentMenu = MenuType.NONE;
 		[HideInInspector] private bool _menuVisible = true;
 
 		[HideInInspector] private bool _inited = false;
 
-		void init()
+		private void _init()
 		{
-			game = GetComponent<Game>();
-			replayMenu = replayMenuObj.GetComponent<ReplayMenu>();
-			replayMenu.gameUI = this;
+			GameEngine = GetComponent<GameEngine>();
+			replayMenu = _replayMenuObj.GetComponent<ReplayMenu>();
+			replayMenu.GameUI = this;
 
-			levelCompleteMenu = levelCompleteMenuObj.GetComponent<LevelCompleteMenu>();
-			levelCompleteMenu.gameUI = this;
+			_levelCompleteMenu = _levelCompleteMenuObj.GetComponent<LevelCompleteMenu>();
+			_levelCompleteMenu.GameUI = this;
 
 			_inited = true;
 		}
 
-		public void setMenu(MenuType menuType)
+		public void SetMenu(MenuType menuType)
 		{
-			if (!_inited) init();
+			if (!_inited) _init();
 			switch (menuType)
 			{
 				case MenuType.REPLAY:
-					replayMenu.setVisible(true);
+					replayMenu.SetVisible(true);
 					break;
 
 				case MenuType.LEVEL_COMPLETE:
-					levelCompleteMenu.setVisible(true);
+					_levelCompleteMenu.SetVisible(true);
 					break;
 			}
 
 			if (menuType != MenuType.NONE)
 			{
-				game.gameInput.setUIInput(true);
+				GameEngine.GameInput.SetUiInput(true);
 				_setMenuVisible(true);
 			}
 			else
 			{
-				game.gameInput.setUIInput(false);
+				GameEngine.GameInput.SetUiInput(false);
 				_hideAllMenu();
 				_setMenuVisible(false);
 			}
 
-			currentMenu = menuType;
+			_currentMenu = menuType;
 		}
 
 		private void _hideAllMenu()
 		{
-			replayMenu.setVisible(false);
-			levelCompleteMenu.setVisible(false);
+			replayMenu.SetVisible(false);
+			_levelCompleteMenu.SetVisible(false);
 		}
 
 
 		private void _setMenuVisible(bool visible)
 		{
 			_menuVisible = visible;
-			menuContainer.GetComponent<Image>().enabled = visible;
+			_menuContainer.GetComponent<Image>().enabled = visible;
 		}
 
 	}

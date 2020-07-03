@@ -43,278 +43,278 @@ public class FightController : MonoBehaviour
     public static float TIME_NORMALIZE_STATS = 0.2f; // time to move stats on normal position
  
     
-    [HideInInspector] public ChessBoard board;
+    [HideInInspector] public ChessBoard Board;
 
-    [HideInInspector] public FightCellState CellState = FightCellState.NONE;
+    [HideInInspector] public FightCellState FightState = FightCellState.NONE;
 
-    private Cell cell1; // attackers cell
-    private Cell cell2; // cell where we have fight
+    private Cell _cell1; // attackers cell
+    private Cell _cell2; // cell where we have fight
 
-    private BasePiece defender;
-    private BasePiece attacker;
+    private BasePiece _defender;
+    private BasePiece _attacker;
 
-    private Vector3 attackerPosition = new Vector3(-0.3f, 0, 0);
-    private Vector3 defenderPosition = new Vector3(0.3f, 0, 0);
-    private Vector3 attackedShift = new Vector3(0.1f, 0, 0);
+    private Vector3 _attackerPosition = new Vector3(-0.3f, 0, 0);
+    private Vector3 _defenderPosition = new Vector3(0.3f, 0, 0);
+    private Vector3 _attackedShift = new Vector3(0.1f, 0, 0);
     
-    private Vector3 deathShift = new Vector3(0.2f,0,0);
+    private Vector3 _deathShift = new Vector3(0.2f,0,0);
 
     public void Setup(ChessBoard board)
     {
-        this.board = board;
+        Board = board;
     }
-
-    private bool checkCleaningFight(string name)
+    
+    public void BeginAttack(Cell cell1, Cell cell2)
     {
-        bool notClean = cell1 != null || cell2 != null || defender != null || attacker != null;
-        if (notClean)
-        {
-            Debug.Log("NOT CLEAN: "+name);
-        }
-        return notClean;
-    }
+        if (_checkCleaningFight("beginAttack")) return;
 
-    public void beginAttack(Cell cell1, Cell cell2)
-    {
-        if (checkCleaningFight("beginAttack")) return;
+        FightState = FightCellState.ATTTACKER_MOVE_TO_ATTACK_CELL;
 
-        CellState = FightCellState.ATTTACKER_MOVE_TO_ATTACK_CELL;
-
-        this.cell1 = cell1;
-        this.cell2 = cell2;
+        _cell1 = cell1;
+        _cell2 = cell2;
         
-        attacker = cell1.piece;
-        defender = cell2.piece;
+        _attacker = cell1.Piece;
+        _defender = cell2.Piece;
         
         // animate
-        defender.setFightStatus(FightCellStatus.DEFENDER, TIME_MOVE_TO_ATTACK);
+        _defender.SetFightStatus(FightCellStatus.DEFENDER, TIME_MOVE_TO_ATTACK);
         
-        defender.spriteObj.transform.DOLocalMove(defenderPosition, TIME_MOVE_TO_ATTACK);
+        _defender.SpriteObj.transform.DOLocalMove(_defenderPosition, TIME_MOVE_TO_ATTACK);
         
-        attacker.transform.DOLocalMove(cell2.transform.localPosition, TIME_MOVE_TO_ATTACK);
-        attacker.spriteObj.transform.DOLocalMove(attackerPosition, TIME_MOVE_TO_ATTACK).OnComplete(createFight);
+        _attacker.transform.DOLocalMove(cell2.transform.localPosition, TIME_MOVE_TO_ATTACK);
+        _attacker.SpriteObj.transform.DOLocalMove(_attackerPosition, TIME_MOVE_TO_ATTACK).OnComplete(_createFight);
     }
-
-    private void createFight()
+    
+    public void AnimateAtackerAttack()
     {
-        board.createFightAtCell(cell1, cell2);
-        animateAtackerAttack();
-    }
-    public void animateAtackerAttack()
-    {
-        CellState = FightCellState.ATTACKER_ATTACK;
+        FightState = FightCellState.ATTACKER_ATTACK;
         
-        attacker.spriteObj.transform.DOLocalMove(Vector3.zero, TIME_ATTACKING).OnComplete(applyAttackerAttack);
+        _attacker.SpriteObj.transform.DOLocalMove(Vector3.zero, TIME_ATTACKING).OnComplete(_applyAttackerAttack);
 
-        if (!isKilling(attacker,defender))
+        if (!_isKilling(_attacker,_defender))
         {
-            attacker.spriteObj.transform.DOLocalMove(attackerPosition, TIME_ATTACKING_BACK).SetDelay(TIME_ATTACKING);
-            defender.spriteObj.transform.DOLocalMove(defenderPosition + attackedShift, TIME_ATTACKED_SHIFT).SetDelay(TIME_ATTACKING);
-            defender.spriteObj.transform.DOLocalMove(defenderPosition, TIME_ATTACKED_BACK_SHIFT).SetDelay(TIME_ATTACKING+TIME_ATTACKED_SHIFT)
-                .OnComplete(afterAtack);
+            _attacker.SpriteObj.transform.DOLocalMove(_attackerPosition, TIME_ATTACKING_BACK).SetDelay(TIME_ATTACKING);
+            _defender.SpriteObj.transform.DOLocalMove(_defenderPosition + _attackedShift, TIME_ATTACKED_SHIFT).SetDelay(TIME_ATTACKING);
+            _defender.SpriteObj.transform.DOLocalMove(_defenderPosition, TIME_ATTACKED_BACK_SHIFT).SetDelay(TIME_ATTACKING+TIME_ATTACKED_SHIFT)
+                .OnComplete(_afterAttack);
         }
         else
         {
-            defender.spriteObj.transform.DOLocalMove(defenderPosition + deathShift, TIME_DEATH_SHIFT).SetDelay(TIME_ATTACKING);
-            defender.killedAnimation(1, TIME_DEATH_SHIFT, onDefenderKilled);
+            _defender.SpriteObj.transform.DOLocalMove(_defenderPosition + _deathShift, TIME_DEATH_SHIFT).SetDelay(TIME_ATTACKING);
+            _defender.KilledAnimation(1, TIME_DEATH_SHIFT, _onDefenderKilled);
         }
     }
 
     // ally attacks cell to defent teammate
-    public void animateAllyHelpDefend(Cell cell1, Cell cell2)
+    public void AnimateAllyHelpDefend(Cell cell1, Cell cell2)
     {
-        if (checkCleaningFight("animateAllyHelpDefend")) return;
+        if (_checkCleaningFight("animateAllyHelpDefend")) return;
         
-        this.cell1 = cell1;
-        this.cell2 = cell2;
+        _cell1 = cell1;
+        _cell2 = cell2;
         
-        BasePiece allyPiece = cell2.piece;
+        BasePiece allyPiece = cell2.Piece;
 
-        attacker = cell1.piece;
-        defender = cell2.attackerPiece;
+        _attacker = cell1.Piece;
+        _defender = cell2.AttackerPiece;
         
         Vector3 pos = cell2.transform.localPosition - cell1.transform.localPosition;
-        attacker.spriteObj.transform.DOLocalMove(pos, TIME_DEFENCE_ALLY_ATTACK).SetEase(Ease.InCubic).OnComplete(applyAllyDefense);
-        attacker.spriteObj.transform.DOLocalMove(Vector3.zero, TIME_DEFENCE_ALLY_ATTACK_BACK).SetEase(Ease.OutExpo).SetDelay(TIME_DEFENCE_ALLY_ATTACK);
+        _attacker.SpriteObj.transform.DOLocalMove(pos, TIME_DEFENCE_ALLY_ATTACK).SetEase(Ease.InCubic).OnComplete(_applyAllyDefense);
+        _attacker.SpriteObj.transform.DOLocalMove(Vector3.zero, TIME_DEFENCE_ALLY_ATTACK_BACK).SetEase(Ease.OutExpo).SetDelay(TIME_DEFENCE_ALLY_ATTACK);
 
-        if (!isKilling(attacker, defender))
+        if (!_isKilling(_attacker, _defender))
         {
-            defender.spriteObj.transform.DOLocalMove(attackerPosition - attackedShift, TIME_ATTACKED_SHIFT)
+            _defender.SpriteObj.transform.DOLocalMove(_attackerPosition - _attackedShift, TIME_ATTACKED_SHIFT)
                 .SetDelay(TIME_DEFENCE_ALLY_ATTACK);
-            defender.spriteObj.transform.DOLocalMove(attackerPosition, TIME_ATTACKED_BACK_SHIFT)
-                .SetDelay(TIME_DEFENCE_ALLY_ATTACK + TIME_ATTACKED_SHIFT).OnComplete(afterHelpAttack);
+            _defender.SpriteObj.transform.DOLocalMove(_attackerPosition, TIME_ATTACKED_BACK_SHIFT)
+                .SetDelay(TIME_DEFENCE_ALLY_ATTACK + TIME_ATTACKED_SHIFT).OnComplete(_afterHelpAttack);
         }
         else
         {
-            defender.spriteObj.transform.DOLocalMove(attackerPosition - deathShift, TIME_DEATH_SHIFT)
+            _defender.SpriteObj.transform.DOLocalMove(_attackerPosition - _deathShift, TIME_DEATH_SHIFT)
                 .SetDelay(TIME_DEFENCE_ALLY_ATTACK + TIME_ATTACKED_SHIFT);
-            defender.killedAnimation(-1, TIME_DEFENCE_ALLY_ATTACK + TIME_ATTACKED_SHIFT, onAttackerKilled);
+            _defender.KilledAnimation(-1, TIME_DEFENCE_ALLY_ATTACK + TIME_ATTACKED_SHIFT, _onAttackerKilled);
             
-            allyPiece.spriteObj.transform.DOLocalMove(Vector3.zero, TIME_DEFENCE_ALLY_ATTACK + TIME_ATTACKED_SHIFT)
+            allyPiece.SpriteObj.transform.DOLocalMove(Vector3.zero, TIME_DEFENCE_ALLY_ATTACK + TIME_ATTACKED_SHIFT)
                 .SetDelay(TIME_DEFENCE_ALLY_ATTACK);
         }
     }
     
-    public void animateAllyHelpAttack(Cell cell1, Cell cell2)
+    public void AnimateAllyHelpAttack(Cell cell1, Cell cell2)
     {
-        if (checkCleaningFight("animateAllyHelpAttack")) return;
+        if (_checkCleaningFight("animateAllyHelpAttack")) return;
         
-        this.cell1 = cell1;
-        this.cell2 = cell2;
+        _cell1 = cell1;
+        _cell2 = cell2;
         
-        BasePiece allyPiece = cell2.attackerPiece;
+        BasePiece allyPiece = cell2.AttackerPiece;
 
-        attacker = cell1.piece;
-        defender = cell2.piece;
+        _attacker = cell1.Piece;
+        _defender = cell2.Piece;
         
         Vector3 pos = cell2.transform.localPosition - cell1.transform.localPosition;
-        attacker.spriteObj.transform.DOLocalMove(pos, TIME_DEFENCE_ALLY_ATTACK).SetEase(Ease.InCubic).OnComplete(applyAllyAttack);
-        attacker.spriteObj.transform.DOLocalMove(Vector3.zero, TIME_MOVE_TO_ATTACK).SetEase(Ease.OutExpo).SetDelay(TIME_DEFENCE_ALLY_ATTACK);
+        _attacker.SpriteObj.transform.DOLocalMove(pos, TIME_DEFENCE_ALLY_ATTACK).SetEase(Ease.InCubic).OnComplete(_applyAllyAttack);
+        _attacker.SpriteObj.transform.DOLocalMove(Vector3.zero, TIME_MOVE_TO_ATTACK).SetEase(Ease.OutExpo).SetDelay(TIME_DEFENCE_ALLY_ATTACK);
 
-        if (!isKilling(attacker, defender))
+        if (!_isKilling(_attacker, _defender))
         {
-            defender.spriteObj.transform.DOLocalMove(attackerPosition - attackedShift, TIME_ATTACKED_SHIFT)
+            _defender.SpriteObj.transform.DOLocalMove(_attackerPosition - _attackedShift, TIME_ATTACKED_SHIFT)
                 .SetDelay(TIME_DEFENCE_ALLY_ATTACK);
-            defender.spriteObj.transform.DOLocalMove(attackerPosition, TIME_ATTACKED_BACK_SHIFT)
-                .SetDelay(TIME_DEFENCE_ALLY_ATTACK + TIME_ATTACKED_SHIFT).OnComplete(afterHelpAttack);
+            _defender.SpriteObj.transform.DOLocalMove(_attackerPosition, TIME_ATTACKED_BACK_SHIFT)
+                .SetDelay(TIME_DEFENCE_ALLY_ATTACK + TIME_ATTACKED_SHIFT).OnComplete(_afterHelpAttack);
         }
         else
         {
-            defender.spriteObj.transform.DOLocalMove(attackerPosition - deathShift, TIME_DEATH_SHIFT)
+            _defender.SpriteObj.transform.DOLocalMove(_attackerPosition - _deathShift, TIME_DEATH_SHIFT)
                 .SetDelay(TIME_DEFENCE_ALLY_ATTACK + TIME_ATTACKED_SHIFT);
-            defender.killedAnimation(-1, TIME_DEFENCE_ALLY_ATTACK, onDefenderKilled);
+            _defender.KilledAnimation(-1, TIME_DEFENCE_ALLY_ATTACK, _onDefenderKilled);
             
-            allyPiece.spriteObj.transform.DOLocalMove(Vector3.zero, TIME_WIN_AFTER_HELP).SetDelay(TIME_DEFENCE_ALLY_ATTACK);
+            allyPiece.SpriteObj.transform.DOLocalMove(Vector3.zero, TIME_WIN_AFTER_HELP).SetDelay(TIME_DEFENCE_ALLY_ATTACK);
         }
     }
     
     // attacker continues his attack
-    public void animateFightCellAttackerAttack(Cell cell)
+    public void AnimateFightCellAttackerAttack(Cell cell)
     {
-        if (checkCleaningFight("animateFightCellAttackerAttack")) return;
+        if (_checkCleaningFight("animateFightCellAttackerAttack")) return;
         
-        this.cell2 = cell;
+        this._cell2 = cell;
         
-        attacker = cell.attackerPiece;
-        defender = cell.piece;
+        _attacker = cell.AttackerPiece;
+        _defender = cell.Piece;
         
-        CellState = FightCellState.ATTACKER_ATTACK;
+        FightState = FightCellState.ATTACKER_ATTACK;
         
-        attacker.spriteObj.transform.DOLocalMove(Vector3.zero, TIME_ATTACKING).OnComplete(applyAttackerAttack);
+        _attacker.SpriteObj.transform.DOLocalMove(Vector3.zero, TIME_ATTACKING).OnComplete(_applyAttackerAttack);
 
-        if (!isKilling(attacker,defender))
+        if (!_isKilling(_attacker,_defender))
         {
-            attacker.spriteObj.transform.DOLocalMove(attackerPosition, TIME_ATTACKING_BACK).SetDelay(TIME_ATTACKING);
-            defender.spriteObj.transform.DOLocalMove(defenderPosition + attackedShift, TIME_ATTACKED_SHIFT).SetDelay(TIME_ATTACKING);
-            defender.spriteObj.transform.DOLocalMove(defenderPosition, TIME_ATTACKED_BACK_SHIFT).SetDelay(TIME_ATTACKING+TIME_ATTACKED_SHIFT)
-            .OnComplete(afterAtack);
+            _attacker.SpriteObj.transform.DOLocalMove(_attackerPosition, TIME_ATTACKING_BACK).SetDelay(TIME_ATTACKING);
+            _defender.SpriteObj.transform.DOLocalMove(_defenderPosition + _attackedShift, TIME_ATTACKED_SHIFT).SetDelay(TIME_ATTACKING);
+            _defender.SpriteObj.transform.DOLocalMove(_defenderPosition, TIME_ATTACKED_BACK_SHIFT).SetDelay(TIME_ATTACKING+TIME_ATTACKED_SHIFT)
+            .OnComplete(_afterAttack);
         }
         else
         {
-            defender.spriteObj.transform.DOLocalMove(defenderPosition + deathShift, TIME_DEATH_SHIFT).SetDelay(TIME_ATTACKING);
-            defender.killedAnimation(1, TIME_DEATH_SHIFT, onDefenderKilled);
+            _defender.SpriteObj.transform.DOLocalMove(_defenderPosition + _deathShift, TIME_DEATH_SHIFT).SetDelay(TIME_ATTACKING);
+            _defender.KilledAnimation(1, TIME_DEATH_SHIFT, _onDefenderKilled);
         }
     }
     
         
     // defender continues attack
-    public void animateFightCellDefenderAttack(Cell cell)
+    public void AnimateFightCellDefenderAttack(Cell cell)
     {       
-        if (checkCleaningFight("animateFightCellDefenderAttack")) return;
+        if (_checkCleaningFight("animateFightCellDefenderAttack")) return;
         
-        this.cell2 = cell;
+        this._cell2 = cell;
         
-        attacker = cell.piece;
-        defender = cell.attackerPiece;
+        _attacker = cell.Piece;
+        _defender = cell.AttackerPiece;
         
-        CellState = FightCellState.DEFENDER_ATTACK;
+        FightState = FightCellState.DEFENDER_ATTACK;
         
-        attacker.spriteObj.transform.DOLocalMove(Vector3.zero, TIME_ATTACKING).OnComplete(applyAttackerAttack);
+        _attacker.SpriteObj.transform.DOLocalMove(Vector3.zero, TIME_ATTACKING).OnComplete(_applyAttackerAttack);
 
-        if (!isKilling(attacker,defender))
+        if (!_isKilling(_attacker,_defender))
         {
-            attacker.spriteObj.transform.DOLocalMove(defenderPosition, TIME_ATTACKING_BACK).SetDelay(TIME_ATTACKING);
-            defender.spriteObj.transform.DOLocalMove(attackerPosition - attackedShift, TIME_ATTACKED_SHIFT).SetDelay(TIME_ATTACKING);
-            defender.spriteObj.transform.DOLocalMove(attackerPosition, TIME_ATTACKED_BACK_SHIFT).SetDelay(TIME_ATTACKING+TIME_ATTACKED_SHIFT)
-                .OnComplete(afterAtack);
+            _attacker.SpriteObj.transform.DOLocalMove(_defenderPosition, TIME_ATTACKING_BACK).SetDelay(TIME_ATTACKING);
+            _defender.SpriteObj.transform.DOLocalMove(_attackerPosition - _attackedShift, TIME_ATTACKED_SHIFT).SetDelay(TIME_ATTACKING);
+            _defender.SpriteObj.transform.DOLocalMove(_attackerPosition, TIME_ATTACKED_BACK_SHIFT).SetDelay(TIME_ATTACKING+TIME_ATTACKED_SHIFT)
+                .OnComplete(_afterAttack);
         }
         else
         {
-            defender.spriteObj.transform.DOLocalMove(attackerPosition - deathShift, TIME_DEATH_SHIFT).SetDelay(TIME_ATTACKING);
-            defender.killedAnimation(1, TIME_DEATH_SHIFT, onAttackerKilled);
+            _defender.SpriteObj.transform.DOLocalMove(_attackerPosition - _deathShift, TIME_DEATH_SHIFT).SetDelay(TIME_ATTACKING);
+            _defender.KilledAnimation(1, TIME_DEATH_SHIFT, _onAttackerKilled);
         }
     }
 
 
-    private void onDefenderKilled()
+    private void _onDefenderKilled()
     {
-        bool isGameOver = board.processKilling(cell2, FightCellResult.KILLED_DEFENDER);
+        bool isGameOver = Board.ProcessKilling(_cell2, FightCellResult.KILLED_DEFENDER);
         
-        clearFight();
-        Game.gameController.fightEnded(isGameOver);
+        _clearFight();
+        GameEngine.GameController.FightEnded(isGameOver);
     }
     
-    private void onAttackerKilled()
+    private void _onAttackerKilled()
     {
-        bool isGameOver = board.processKilling(cell2, FightCellResult.KILLED_ATTACKER);
+        bool isGameOver = Board.ProcessKilling(_cell2, FightCellResult.KILLED_ATTACKER);
         // move stats to normal
-        cell2.piece.setFightStatus(FightCellStatus.NORMAL, TIME_NORMALIZE_STATS);
+        _cell2.Piece.SetFightStatus(FightCellStatus.NORMAL, TIME_NORMALIZE_STATS);
         
-        clearFight();
-        Game.gameController.fightEnded(isGameOver);
+        _clearFight();
+        GameEngine.GameController.FightEnded(isGameOver);
     }
 
-    private void applyAttackerAttack()
+    private void _applyAttackerAttack()
     {
-        applyAttack(attacker, defender);
+        _applyAttack(_attacker, _defender);
+    }
+
+    private void _applyDefenderAttack()
+    {
+        _applyAttack(_defender, _attacker);
     }
     
-    
-    private void applyDefenderAttack()
+    private void _applyAllyDefense()
     {
-        applyAttack(defender, attacker);
+        _applyAttack(_attacker, _defender);
+    }
+    private void _applyAllyAttack()
+    {
+        _applyAttack(_attacker, _defender);
     }
     
-    private void applyAllyDefense()
+    private void _applyAttack(BasePiece attacker, BasePiece defender)
     {
-        applyAttack(attacker, defender);
-    }
-    private void applyAllyAttack()
-    {
-        applyAttack(attacker, defender);
-    }
-    
-    private void applyAttack(BasePiece attacker, BasePiece defender)
-    {
-        int newHealth = defender.stats.health - attacker.stats.attack;
+        int newHealth = defender.Stats.health - attacker.Stats.attack;
         newHealth = Math.Max(0, newHealth);
-        defender.stats.health = newHealth;
+        defender.Stats.health = newHealth;
     }
     
-    private void afterAtack()
+    private void _afterAttack()
     {
-        clearFight();
-        Game.gameController.endMove();
+        _clearFight();
+        GameEngine.GameController.EndMove();
     }
     
-    private void afterHelpAttack()
+    private void _afterHelpAttack()
     {
-        clearFight();
-        Game.gameController.endMove();
+        _clearFight();
+        GameEngine.GameController.EndMove();
     }
 
-    private bool isKilling(BasePiece attacker, BasePiece defender)
+    private bool _isKilling(BasePiece attacker, BasePiece defender)
     {
-        return defender.stats.health <= attacker.stats.attack;
+        return defender.Stats.health <= attacker.Stats.attack;
     }
 
-    private void clearFight()
+    private bool _checkCleaningFight(string logMsg)
     {
-        cell1 = null;
-        cell2 = null;
-        defender = null;
-        attacker = null;
-        CellState = FightCellState.NONE;
+        bool notClean = _cell1 != null || _cell2 != null || _defender != null || _attacker != null;
+        if (notClean)
+        {
+            Debug.Log("NOT CLEAN: "+logMsg);
+        }
+        return notClean;
+    }
+    
+    private void _createFight()
+    {
+        Board.CreateFightAtCell(_cell1, _cell2);
+        AnimateAtackerAttack();
+    }
+
+    private void _clearFight()
+    {
+        _cell1 = null;
+        _cell2 = null;
+        _defender = null;
+        _attacker = null;
+        FightState = FightCellState.NONE;
     }
 }
 }

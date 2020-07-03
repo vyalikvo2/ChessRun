@@ -3,5 +3,5 @@ using System.Collections;
 
 public class GameData : MonoBehaviour {
 
-	public static int choosedLevel;
+	public static int ChoosedLevel;
 }
